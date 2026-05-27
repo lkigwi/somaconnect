@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #F8F9FA;
+    color: #0D1B2A;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  #root {
+    width: 100%;
+    min-height: 100vh;
+    text-align: left;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gold text-navy font-semibold px-6 py-3 rounded-xl hover:bg-amber-400 transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .btn-secondary {
+    @apply bg-transparent border-2 border-white text-white font-semibold px-6 py-3 rounded-xl hover:bg-white hover:text-navy transition-all duration-200;
+  }
+
+  .btn-teal {
+    @apply bg-teal text-white font-semibold px-6 py-3 rounded-xl hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold text-navy text-center mb-4;
+  }
+
+  .section-subtitle {
+    @apply text-gray-500 text-center text-lg mb-12;
+  }
+
+  .badge-coming-soon {
+    @apply text-xs font-semibold bg-amber-100 text-amber-700 px-2 py-1 rounded-full;
+  }
+
+  .badge-available {
+    @apply text-xs font-semibold bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full;
+  }
+}
+
+@layer utilities {
+  .gradient-hero {
+    background: linear-gradient(135deg, #0D1B2A 0%, #0077B6 100%);
+  }
+
+  .gradient-card {
+    background: linear-gradient(135deg, #0077B6 0%, #0D1B2A 100%);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #0077B6, #F4A261);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F8F9FA;
+}
+::-webkit-scrollbar-thumb {
+  background: #0077B6;
+  border-radius: 3px;
+}
