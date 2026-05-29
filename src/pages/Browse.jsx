@@ -1,88 +1,89 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const allProfiles = [
   {
     name: 'Grace Wanjiku', role: 'Tutor', subject: 'Mathematics & Physics', level: 'Form 1–4',
-    rating: 4.9, reviews: 87, rate: 800, rateLabel: 'KSh 800/hr', avatar: 'GW', badge: 'Top Rated',
-    location: 'Nairobi', mode: 'Online & In-person', category: 'Academic Tutoring',
+    rating: 4.9, reviews: 87, rate: 800, rateLabel: 'KSh 800/session', avatar: 'GW', badge: 'Top Rated',
+    location: 'Nairobi', mode: 'Online', category: 'Academic Tutoring',
     subjects: ['Mathematics', 'Physics'],
     bio: 'TSC registered teacher with 8 years experience. Specialises in KCSE Maths and Physics with a 95% improvement rate.',
   },
   {
     name: 'Amina Hassan', role: 'Tutor', subject: 'English & Kiswahili', level: 'All levels',
-    rating: 5.0, reviews: 112, rate: 600, rateLabel: 'KSh 600/hr', avatar: 'AH', badge: 'Superstar',
-    location: 'Mombasa', mode: 'Online & In-person', category: 'Academic Tutoring',
+    rating: 5.0, reviews: 112, rate: 600, rateLabel: 'KSh 600/session', avatar: 'AH', badge: 'Superstar',
+    location: 'Mombasa', mode: 'Online', category: 'Academic Tutoring',
     subjects: ['English', 'Kiswahili'],
     bio: 'Literature graduate with a passion for language. Perfect rating across 112 sessions — students love her engaging style.',
   },
   {
     name: 'James Kamau', role: 'Tutor', subject: 'Chemistry & Biology', level: 'KCSE',
-    rating: 4.7, reviews: 63, rate: 750, rateLabel: 'KSh 750/hr', avatar: 'JK', badge: 'Popular',
+    rating: 4.7, reviews: 63, rate: 750, rateLabel: 'KSh 750/session', avatar: 'JK', badge: 'Popular',
     location: 'Nakuru', mode: 'Online', category: 'Academic Tutoring',
     subjects: ['Chemistry', 'Biology'],
     bio: 'BSc Chemistry from UoN. Former lab assistant turned tutor, making science accessible and fun for KCSE candidates.',
   },
   {
     name: 'Brian Otieno', role: 'Tutor', subject: 'Computer Studies & ICT', level: 'Form 2–4 & CBC',
-    rating: 4.8, reviews: 71, rate: 900, rateLabel: 'KSh 900/hr', avatar: 'BO', badge: 'Tech Expert',
-    location: 'Nairobi', mode: 'Online & In-person', category: 'Academic Tutoring',
+    rating: 4.8, reviews: 71, rate: 900, rateLabel: 'KSh 900/session', avatar: 'BO', badge: 'Tech Expert',
+    location: 'Nairobi', mode: 'Online', category: 'Academic Tutoring',
     subjects: ['Computer Studies', 'ICT'],
     bio: 'Software developer and educator. Teaches coding, ICT and Computer Studies to secondary students with real-world projects.',
   },
   {
     name: 'Daniel Ochieng', role: 'Mentor', subject: 'Career Guidance', level: 'University & Adults',
-    rating: 4.8, reviews: 54, rate: 1200, rateLabel: 'KSh 1,200/hr', avatar: 'DO', badge: 'Career Coach',
+    rating: 4.8, reviews: 54, rate: 1200, rateLabel: 'KSh 1,200/session', avatar: 'DO', badge: 'Career Coach',
     location: 'Kisumu', mode: 'Online', category: 'Career Guidance',
     subjects: ['Career Guidance', 'Leadership'],
     bio: 'MBA holder and corporate trainer with 12 years in talent development. Helps young professionals land their dream jobs.',
   },
   {
     name: 'Peter Ngugi', role: 'Mentor', subject: 'Career & University Guidance', level: 'Form 4 & University',
-    rating: 4.7, reviews: 33, rate: 1000, rateLabel: 'KSh 1,000/hr', avatar: 'PN', badge: 'Advisor',
-    location: 'Nairobi', mode: 'Online & In-person', category: 'Career Guidance',
+    rating: 4.7, reviews: 33, rate: 1000, rateLabel: 'KSh 1,000/session', avatar: 'PN', badge: 'Advisor',
+    location: 'Nairobi', mode: 'Online', category: 'Career Guidance',
     subjects: ['Career Guidance', 'University Applications'],
     bio: 'Former admissions advisor at a leading Kenyan university. Specialises in scholarship applications and career mapping for Form 4 students.',
   },
   {
     name: 'Dr. Fatuma Abdalla', role: 'Mentor', subject: 'Mental Health & Wellness', level: 'Teens & Adults',
-    rating: 4.9, reviews: 41, rate: 1500, rateLabel: 'KSh 1,500/hr', avatar: 'FA', badge: 'Licensed',
+    rating: 4.9, reviews: 41, rate: 1500, rateLabel: 'KSh 1,500/session', avatar: 'FA', badge: 'Licensed',
     location: 'Nairobi', mode: 'Online', category: 'Mental Health & Wellness',
     subjects: ['Mental Health', 'Counselling'],
     bio: 'Licensed clinical psychologist (PhD, UoN) specialising in adolescent mental health, anxiety, and academic stress. Confidential sessions.',
   },
   {
     name: 'Mary Omondi', role: 'Mentor', subject: 'Counselling & Emotional Wellness', level: 'Students & Families',
-    rating: 4.8, reviews: 29, rate: 1200, rateLabel: 'KSh 1,200/hr', avatar: 'MO', badge: 'Counsellor',
-    location: 'Kisumu', mode: 'Online & In-person', category: 'Mental Health & Wellness',
+    rating: 4.8, reviews: 29, rate: 1200, rateLabel: 'KSh 1,200/session', avatar: 'MO', badge: 'Counsellor',
+    location: 'Kisumu', mode: 'Online', category: 'Mental Health & Wellness',
     subjects: ['Mental Health', 'Resilience'],
     bio: 'Registered counsellor with a focus on grief, identity, and stress management. Warm, empathetic approach tailored to each learner.',
   },
   {
     name: 'Rev. John Mwangi', role: 'Mentor', subject: 'Faith & Spiritual Mentorship', level: 'All ages',
-    rating: 5.0, reviews: 28, rate: 800, rateLabel: 'KSh 800/hr', avatar: 'JM', badge: 'Faith Guide',
-    location: 'Nairobi', mode: 'Online & In-person', category: 'Faith & Spiritual Mentorship',
+    rating: 5.0, reviews: 28, rate: 800, rateLabel: 'KSh 800/session', avatar: 'JM', badge: 'Faith Guide',
+    location: 'Nairobi', mode: 'Online', category: 'Faith & Spiritual Mentorship',
     subjects: ['Faith Mentorship', 'Christian Discipleship'],
     bio: 'Ordained pastor and certified life coach. Helps individuals integrate faith with everyday decisions, relationships, and purpose.',
   },
   {
     name: 'Ustadh Ali Hassan', role: 'Mentor', subject: 'Islamic Spiritual Guidance', level: 'Teens & Adults',
-    rating: 4.9, reviews: 19, rate: 700, rateLabel: 'KSh 700/hr', avatar: 'AH', badge: 'Islamic Guide',
+    rating: 4.9, reviews: 19, rate: 700, rateLabel: 'KSh 700/session', avatar: 'AH', badge: 'Islamic Guide',
     location: 'Mombasa', mode: 'Online', category: 'Faith & Spiritual Mentorship',
     subjects: ['Faith Mentorship', 'Islamic Studies'],
     bio: 'Islamic scholar with 15 years of youth mentorship. Provides Quran-grounded guidance on character, purpose, and resilience.',
   },
   {
     name: 'Sarah Njoroge', role: 'Mentor', subject: 'Leadership & Life Skills', level: 'Teens & Young Adults',
-    rating: 4.9, reviews: 39, rate: 1000, rateLabel: 'KSh 1,000/hr', avatar: 'SN', badge: 'Leader Coach',
+    rating: 4.9, reviews: 39, rate: 1000, rateLabel: 'KSh 1,000/session', avatar: 'SN', badge: 'Leader Coach',
     location: 'Nairobi', mode: 'Online', category: 'Leadership Mentorship',
     subjects: ['Leadership', 'Life Skills'],
     bio: 'Youth empowerment facilitator and published author. Runs workshops for teens navigating school, identity, and future goals.',
   },
   {
     name: 'Collins Maina', role: 'Mentor', subject: 'Entrepreneurship & Leadership', level: 'University & Professionals',
-    rating: 4.8, reviews: 22, rate: 1300, rateLabel: 'KSh 1,300/hr', avatar: 'CM', badge: 'Entrepreneur',
-    location: 'Nairobi', mode: 'Online & In-person', category: 'Leadership Mentorship',
+    rating: 4.8, reviews: 22, rate: 1300, rateLabel: 'KSh 1,300/session', avatar: 'CM', badge: 'Entrepreneur',
+    location: 'Nairobi', mode: 'Online', category: 'Leadership Mentorship',
     subjects: ['Leadership', 'Entrepreneurship'],
     bio: 'Serial entrepreneur and TEDx speaker. Mentors university students and young professionals in building ventures and leadership presence.',
   },
@@ -90,10 +91,19 @@ const allProfiles = [
 
 const categoryOptions = ['All Categories', 'Academic Tutoring', 'Career Guidance', 'Mental Health & Wellness', 'Faith & Spiritual Mentorship', 'Leadership Mentorship'];
 const roleOptions = ['All Roles', 'Tutor', 'Mentor'];
-const modeOptions = ['All Modes', 'Online', 'In-person'];
+const modeOptions = ['All Modes', 'Online'];
 const locationOptions = ['All Locations', 'Nairobi', 'Mombasa', 'Kisumu', 'Nakuru'];
 
 export default function Browse() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/signin', { state: { message: 'Please sign in to browse tutors and mentors.' } });
+    }
+  }, [user, navigate]);
+
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All Categories');
   const [role, setRole] = useState('All Roles');
@@ -101,6 +111,8 @@ export default function Browse() {
   const [location, setLocation] = useState('All Locations');
   const [maxRate, setMaxRate] = useState(2000);
   const [showFilters, setShowFilters] = useState(false);
+
+  if (!user) return null;
 
   const filtered = allProfiles.filter((p) => {
     const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.subject.toLowerCase().includes(search.toLowerCase());
@@ -197,7 +209,7 @@ export default function Browse() {
 
               <div>
                 <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-2">
-                  Max Rate: <span className="text-teal">KSh {maxRate.toLocaleString()}/hr</span>
+                  Max Rate: <span className="text-teal">KSh {maxRate.toLocaleString()}/session</span>
                 </label>
                 <input type="range" min={200} max={2000} step={50} value={maxRate}
                   onChange={(e) => setMaxRate(Number(e.target.value))} className="w-full accent-teal" />
@@ -256,7 +268,18 @@ export default function Browse() {
                         </div>
                         <span className="text-teal font-bold text-sm">{p.rateLabel}</span>
                       </div>
-                      <Link to="/booking" className="btn-teal text-sm text-center py-2.5 block">Book Now</Link>
+                      <button
+                        onClick={() => {
+                          if (!user) {
+                            navigate('/signin', { state: { message: 'Please sign in to book a session.' } });
+                          } else {
+                            navigate('/booking');
+                          }
+                        }}
+                        className="btn-teal text-sm text-center py-2.5 w-full"
+                      >
+                        Book Now
+                      </button>
                     </div>
                   </div>
                 ))}

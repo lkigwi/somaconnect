@@ -25,7 +25,12 @@ const serviceOptions = [
 ];
 
 const academicSubjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Kiswahili', 'History', 'Geography', 'Business Studies', 'Computer Studies', 'Agriculture', 'CRE/IRE', 'French', 'Music'];
-const gradeLevels = ['CBC Grade 1–3', 'CBC Grade 4–6', 'CBC Grade 7–9', 'KCSE Form 1–2', 'KCSE Form 3–4', 'A-Level', 'University', 'Adult Learning'];
+const gradeLevels = [
+  'CBC Grade 1', 'CBC Grade 2', 'CBC Grade 3', 'CBC Grade 4',
+  'CBC Grade 5', 'CBC Grade 6', 'CBC Grade 7', 'CBC Grade 8',
+  'CBC Grade 9 (Junior Secondary)', 'Grade 10 (Senior Secondary)',
+  'Form 3', 'Form 4', 'A-Level', 'University', 'Adult Learning',
+];
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const educationLevels = ["Bachelor's Degree", "Master's Degree", 'PhD / Doctorate', 'Diploma / Certificate', 'Other'];
 
@@ -47,7 +52,7 @@ export default function TutorSignup() {
     faithTradition: '', faithApproach: '',
     leadershipBackground: '', leadershipTargetAge: '',
     // Step 3
-    hourlyRate: '', availability: [], sessionMode: '',
+    hourlyRate: '', availability: [], sessionMode: 'Online',
     // Step 4
     education: '', experienceYears: '',
     idFile: '', certFile: '',
@@ -393,7 +398,7 @@ export default function TutorSignup() {
           {/* ── STEP 3: Rate & Availability ── */}
           {step === 3 && (
             <div className="space-y-5">
-              <FormField label="Hourly Rate (KES)" required error={errors.hourlyRate} touched={touched.hourlyRate}
+              <FormField label="Rate per Session (KES)" required error={errors.hourlyRate} touched={touched.hourlyRate}
                 hint="Minimum KES 500. You keep 85% after platform commission.">
                 <input type="number" min={500} value={form.hourlyRate}
                   onChange={(e) => handleChange('hourlyRate', e.target.value)}
@@ -406,7 +411,7 @@ export default function TutorSignup() {
                 <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-sm">
                   <p className="text-emerald-700 font-semibold">Earnings Preview</p>
                   <p className="text-emerald-600 text-xs mt-1">
-                    You will earn <strong>KES {commission.toLocaleString()}</strong> per hour after 15% platform commission.
+                    You will earn <strong>KES {commission.toLocaleString()}</strong> per session after 15% platform commission.
                   </p>
                 </div>
               )}
@@ -430,7 +435,7 @@ export default function TutorSignup() {
                   Session Mode <span className="text-red-400">*</span>
                 </label>
                 <div className="grid grid-cols-3 gap-3">
-                  {['Online', 'In-Person', 'Both'].map((m) => (
+                  {['Online'].map((m) => (
                     <button key={m} onClick={() => update('sessionMode', m)}
                       className={`py-3 text-sm rounded-xl border-2 font-medium transition-all ${form.sessionMode === m ? 'border-teal bg-teal/10 text-teal' : 'border-gray-200 text-gray-600'}`}>
                       {m}

@@ -21,7 +21,14 @@ const serviceCards = [
 
 const academicSubjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Kiswahili', 'History', 'Geography', 'Business Studies', 'Computer Studies'];
 
-const gradeOptions = ['Primary (Grade 1–6)', 'CBC Grade 7', 'CBC Grade 8', 'CBC Grade 9', 'Form 1', 'Form 2', 'Form 3', 'Form 4', 'University Year 1', 'University Year 2', 'University Year 3+', 'Working Professional'];
+const gradeOptions = [
+  'CBC Grade 1', 'CBC Grade 2', 'CBC Grade 3', 'CBC Grade 4',
+  'CBC Grade 5', 'CBC Grade 6', 'CBC Grade 7', 'CBC Grade 8',
+  'CBC Grade 9 (Junior Secondary)', 'Grade 10 (Senior Secondary)',
+  'Form 3', 'Form 4',
+  'University Year 1', 'University Year 2', 'University Year 3+',
+  'Working Professional',
+];
 
 const academicGoals = [
   'Pass my upcoming exams',
@@ -53,7 +60,7 @@ export default function StudentQuestionnaire() {
     services: [],
     selectedSubjects: [], struggleWith: '', academicGoals: [],
     mentorshipGoals: [], mentorshipDesc: '',
-    mode: '', schedule: '', budget: '',
+    mode: 'Online', schedule: '', budget: '',
   });
 
   const update = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
@@ -367,7 +374,7 @@ export default function StudentQuestionnaire() {
                   Session Mode <span className="text-red-400">*</span>
                 </label>
                 <div className="grid grid-cols-3 gap-3">
-                  {['Online', 'In-Person', 'Either'].map((m) => (
+                  {['Online'].map((m) => (
                     <button key={m} onClick={() => update('mode', m)}
                       className={`py-3 text-sm rounded-xl border-2 font-medium transition-all ${form.mode === m ? 'border-teal bg-teal/10 text-teal' : 'border-gray-200 text-gray-600'}`}>
                       {m}

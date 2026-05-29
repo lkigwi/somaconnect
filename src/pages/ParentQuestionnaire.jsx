@@ -42,7 +42,7 @@ export default function ParentQuestionnaire() {
     services: [],
     level: '', selectedSubjects: [],
     goals: [], urgency: '',
-    tutorGender: '', mode: '', budget: '', language: '', additionalNotes: '',
+    tutorGender: '', mode: 'Online', budget: '', language: '', additionalNotes: '',
   });
 
   const update = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
@@ -151,15 +151,24 @@ export default function ParentQuestionnaire() {
 
   const handleCreateAccount = () => {
     setAccountError('');
-    if (!accountEmail || !validators.email(accountEmail) === null) {
-      if (!accountEmail) { setAccountError('Please enter your email address.'); return; }
+    if (!accountEmail) {
+      setAccountError('Please enter your email address.');
+      return;
     }
-    if (!validators.email(accountEmail)) {
+    if (validators.email(accountEmail)) {
       setAccountError('Please enter a valid email address.');
+      return;
+    }
+    if (!accountPassword) {
+      setAccountError('Please create a password.');
       return;
     }
     if (accountPassword.length < 8) {
       setAccountError('Password must be at least 8 characters.');
+      return;
+    }
+    if (!accountConfirm) {
+      setAccountError('Please confirm your password.');
       return;
     }
     if (accountPassword !== accountConfirm) {
@@ -208,28 +217,34 @@ export default function ParentQuestionnaire() {
 
           {/* Account creation */}
           <div className="border-t border-gray-100 pt-6 mb-4">
+            <div className="bg-teal/10 border border-teal/20 rounded-xl p-3 mb-4">
+              <p className="text-teal text-sm font-semibold text-center">Create your account to access tutors and mentors.</p>
+            </div>
             <h3 className="font-bold text-navy text-base mb-1">Create Your Account</h3>
-            <p className="text-gray-500 text-xs mb-4">Save your preferences and browse matched tutors instantly.</p>
+            <p className="text-gray-500 text-xs mb-4">All fields are required to get access to our tutors and mentors.</p>
             <div className="space-y-3">
               <input
                 type="email"
                 value={accountEmail}
                 onChange={(e) => setAccountEmail(e.target.value)}
-                placeholder="Email address"
+                placeholder="Email address *"
+                required
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-teal transition-colors"
               />
               <input
                 type="password"
                 value={accountPassword}
                 onChange={(e) => setAccountPassword(e.target.value)}
-                placeholder="Create password (min 8 characters)"
+                placeholder="Create password (min 8 characters) *"
+                required
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-teal transition-colors"
               />
               <input
                 type="password"
                 value={accountConfirm}
                 onChange={(e) => setAccountConfirm(e.target.value)}
-                placeholder="Confirm password"
+                placeholder="Confirm password *"
+                required
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-teal transition-colors"
               />
               {accountError && (
@@ -237,19 +252,16 @@ export default function ParentQuestionnaire() {
               )}
               <button
                 onClick={handleCreateAccount}
-                disabled={creatingAccount}
-                className="w-full btn-primary py-3 text-sm disabled:opacity-60"
+                disabled={creatingAccount || !accountEmail || !accountPassword || !accountConfirm}
+                className="w-full btn-primary py-3 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {creatingAccount ? 'Creating account...' : 'Create Account and Browse'}
+                {creatingAccount ? 'Creating account...' : 'Create Account & Browse Tutors'}
               </button>
             </div>
           </div>
 
-          <div className="flex gap-3">
-            <Link to="/browse" className="flex-1 text-sm text-center py-3 bg-teal/10 text-teal rounded-xl font-semibold hover:bg-teal hover:text-white transition-all">
-              Browse Without Account
-            </Link>
-            <Link to="/" className="flex-1 text-sm text-center py-3 border-2 border-gray-200 rounded-xl text-navy font-semibold hover:border-teal transition-colors">
+          <div className="flex justify-center">
+            <Link to="/" className="text-sm text-center py-3 text-gray-400 hover:text-navy transition-colors">
               Back Home
             </Link>
           </div>
@@ -392,7 +404,12 @@ export default function ParentQuestionnaire() {
               <div>
                 <label className="text-xs font-semibold text-gray-600 block mb-2.5">School Level</label>
                 <div className="grid grid-cols-2 gap-3">
-                  {['CBC Grade 1–6', 'CBC Grade 7–9', 'KCSE Form 1–4', 'A-Level / 6th Form', 'University', 'Adult Learner'].map((lvl) => (
+                  {[
+                    'CBC Grade 1', 'CBC Grade 2', 'CBC Grade 3', 'CBC Grade 4',
+                    'CBC Grade 5', 'CBC Grade 6', 'CBC Grade 7', 'CBC Grade 8',
+                    'CBC Grade 9 (Junior Secondary)', 'Grade 10 (Senior Secondary)',
+                    'Form 3', 'Form 4', 'University', 'Adult Learner',
+                  ].map((lvl) => (
                     <button key={lvl} onClick={() => update('level', lvl)}
                       className={`py-3 px-4 text-sm rounded-xl border-2 font-medium text-left transition-all ${form.level === lvl ? 'border-teal bg-teal/10 text-teal' : 'border-gray-200 text-gray-600 hover:border-teal/50'}`}>
                       {lvl}
@@ -435,7 +452,7 @@ export default function ParentQuestionnaire() {
               <p className="text-sm text-gray-500 mb-2">What do you hope to achieve?</p>
 
               {form.services.includes('academic') && [
-                'Pass upcoming exams (KCSE/KCPE/Mock)',
+                'Pass upcoming exams (KPSEA/KJSEA/KCSE)',
                 'Improve grades consistently',
                 'Build strong foundational understanding',
                 'University / scholarship preparation',
@@ -488,7 +505,7 @@ export default function ParentQuestionnaire() {
               <div>
                 <label className="text-xs font-semibold text-gray-600 block mb-2.5">Session Mode</label>
                 <div className="grid grid-cols-3 gap-3">
-                  {[['Online', '💻'], ['In-Person', '🏠'], ['Either', '↔']].map(([label]) => (
+                  {[['Online', '💻']].map(([label]) => (
                     <button key={label} onClick={() => update('mode', label)}
                       className={`py-4 flex flex-col items-center gap-2 rounded-xl border-2 font-medium transition-all text-sm ${form.mode === label ? 'border-teal bg-teal/10 text-teal' : 'border-gray-200 text-gray-600'}`}>
                       {label}
@@ -497,7 +514,7 @@ export default function ParentQuestionnaire() {
                 </div>
               </div>
               <div>
-                <label className="text-xs font-semibold text-gray-600 block mb-2.5">Budget per hour</label>
+                <label className="text-xs font-semibold text-gray-600 block mb-2.5">Budget per session</label>
                 <div className="grid grid-cols-2 gap-3">
                   {['Under KSh 500', 'KSh 500–800', 'KSh 800–1,200', 'Over KSh 1,200'].map((b) => (
                     <button key={b} onClick={() => update('budget', b)}

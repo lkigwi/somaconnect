@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import CalendarDropdown from '../components/CalendarDropdown';
 
 const timeSlots = [
   '7:00 AM', '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM',
@@ -63,7 +64,7 @@ export default function Booking() {
     level: 'Form 1–4',
     rating: 4.9,
     reviews: 87,
-    rate: 'KSh 800/hr',
+    rate: 'KSh 800/session',
     avatar: 'GW',
     badge: 'Top Rated',
   };
@@ -148,6 +149,20 @@ export default function Booking() {
             >
               Download Receipt
             </button>
+          </div>
+
+          <div className="flex justify-center mb-4">
+            <CalendarDropdown session={{
+              id: `SC-${Date.now()}`,
+              tutor: tutor.name,
+              subject: tutor.subject,
+              date: selectedDate
+                ? selectedDate.toLocaleDateString('en-KE', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })
+                : '',
+              time: selectedSlot || '',
+              duration: sessionType,
+              jitsiRoom: 'SomaConnect-Demo',
+            }} />
           </div>
 
           <p className="text-xs text-gray-400 mb-5">A confirmation SMS has been sent to your M-Pesa number.</p>

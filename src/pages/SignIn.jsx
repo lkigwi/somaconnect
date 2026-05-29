@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { IconLock, IconEnvelope } from '../components/Icons';
 
 export default function SignIn() {
   const { signIn } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectMessage = location.state?.message;
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -44,6 +46,12 @@ export default function SignIn() {
           <h1 className="text-2xl font-black text-navy">Welcome Back</h1>
           <p className="text-gray-500 text-sm mt-1">Sign in to your SomaConnect account</p>
         </div>
+
+        {redirectMessage && (
+          <div className="bg-amber-50 text-amber-700 text-sm rounded-xl px-4 py-3 border border-amber-100 mb-4">
+            {redirectMessage}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
