@@ -1,8 +1,22 @@
 import { useState, useRef, useEffect } from 'react';
 import { IconCalendar, IconChevronDown } from './Icons';
 
+const MONTHS = { Jan:0, Feb:1, Mar:2, Apr:3, May:4, Jun:5, Jul:6, Aug:7, Sep:8, Oct:9, Nov:10, Dec:11 };
+
 function parseSessionDateTime(dateStr, timeStr) {
-  return new Date(`${dateStr} ${timeStr}`);
+  // dateStr: 'Thu, 29 May 2026'  timeStr: '4:00 PM'
+  const parts = dateStr.replace(',', '').split(/\s+/).filter(Boolean);
+  const day = parseInt(parts[1], 10);
+  const month = MONTHS[parts[2]] ?? 0;
+  const year = parseInt(parts[3], 10);
+
+  const m = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  let h = parseInt(m[1], 10);
+  const min = parseInt(m[2], 10);
+  if (m[3].toUpperCase() === 'PM' && h !== 12) h += 12;
+  if (m[3].toUpperCase() === 'AM' && h === 12) h = 0;
+
+  return new Date(Date.UTC(year, month, day, h, min, 0));
 }
 
 function parseDuration(dur) {
@@ -20,23 +34,28 @@ function buildCalendarLinks(session) {
   const start = parseSessionDateTime(session.date, session.time);
   const hours = parseDuration(session.duration);
   const end = new Date(start.getTime() + hours * 3600000);
-  const personName = session.tutor || session.student || 'Tutor';
-  const title = encodeURIComponent(`Soma Connect Session with ${personName}`);
-  const details = encodeURIComponent(`${session.subject} session. Join at: https://meet.jit.si/${session.jitsiRoom}`);
-  const location = encodeURIComponent('Online (Jitsi Video)');
+
+  const title = 'Soma Connect Session';
+  const details = 'Tutoring session via Soma Connect';
+  const location = 'somaconnect.vercel.app';
+
+  const googleStart = toGoogleDate(start);
+  const googleEnd = toGoogleDate(end);
+  const outlookStart = start.toISOString().slice(0, 19);
+  const outlookEnd = end.toISOString().slice(0, 19);
 
   return {
-    google: `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${toGoogleDate(start)}/${toGoogleDate(end)}&details=${details}&location=${location}`,
-    outlook: `https://outlook.live.com/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent&subject=${title}&startdt=${start.toISOString().split('.')[0]}&enddt=${end.toISOString().split('.')[0]}&body=${details}&location=${location}`,
+    google: `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${googleStart}/${googleEnd}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`,
+    outlook: `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(title)}&startdt=${outlookStart}&enddt=${outlookEnd}`,
     ics: [
       'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//SomaConnect//EN',
       'BEGIN:VEVENT',
-      `SUMMARY:Soma Connect Session with ${personName}`,
-      `DTSTART:${toGoogleDate(start)}`,
-      `DTEND:${toGoogleDate(end)}`,
-      `DESCRIPTION:${session.subject} session via Jitsi\\nJoin: https://meet.jit.si/${session.jitsiRoom}`,
-      'LOCATION:Online (Jitsi Video)',
-      `UID:${session.id}@somaconnect.co.ke`,
+      `SUMMARY:${title}`,
+      `DTSTART:${googleStart}`,
+      `DTEND:${googleEnd}`,
+      `DESCRIPTION:${details}\\nJoin: https://meet.jit.si/${session.jitsiRoom || 'SomaConnect-Demo'}`,
+      `LOCATION:${location}`,
+      `UID:${session.id || Date.now()}@somaconnect.co.ke`,
       'END:VEVENT', 'END:VCALENDAR',
     ].join('\r\n'),
   };
@@ -53,14 +72,13 @@ export default function CalendarDropdown({ session }) {
   }, []);
 
   const links = buildCalendarLinks(session);
-  const personName = session.tutor || session.student || 'Tutor';
 
   const downloadIcs = () => {
     const blob = new Blob([links.ics], { type: 'text/calendar' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${personName.replace(/\s+/g, '_')}_session.ics`;
+    a.download = 'soma_connect_session.ics';
     a.click();
     URL.revokeObjectURL(url);
     setOpen(false);
@@ -80,7 +98,7 @@ export default function CalendarDropdown({ session }) {
       {open && (
         <div className="absolute z-20 top-full mt-1 left-0 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden w-52">
           <div className="px-3 py-2 border-b border-gray-100">
-            <p className="text-xs text-gray-500 font-medium truncate">Session with {personName}</p>
+            <p className="text-xs text-gray-500 font-medium">Add session to calendar</p>
           </div>
           <a
             href={links.google} target="_blank" rel="noopener noreferrer"

@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { IconCheckCircle, IconClock, IconBanknotes, IconStar, IconCheck } from '../components/Icons';
 import CalendarDropdown from '../components/CalendarDropdown';
 
 // ── Data ─────────────────────────────────────────────────────
-const upcomingSessions = [
+const INITIAL_UPCOMING = [
   {
     id: 1, tutor: 'Grace Wanjiku', avatar: 'GW', subject: 'Mathematics',
     date: 'Thu, 29 May 2026', time: '4:00 PM', duration: '1 Hour', mode: 'Online (Jitsi)',
@@ -41,11 +41,26 @@ export default function Dashboard() {
   const [ratingModal, setRatingModal] = useState(null);
   const [ratings, setRatings] = useState({});
   const [hoverRating, setHoverRating] = useState(0);
+  const [upcoming, setUpcoming] = useState(INITIAL_UPCOMING);
+  const [cancelConfirm, setCancelConfirm] = useState(null);
+  const [cancelSuccess, setCancelSuccess] = useState(false);
 
   const submitRating = (sessionId, rating) => {
     setRatings((prev) => ({ ...prev, [sessionId]: rating }));
     setRatingModal(null);
   };
+
+  const confirmCancel = () => {
+    setUpcoming((prev) => prev.filter((s) => s.id !== cancelConfirm));
+    setCancelConfirm(null);
+    setCancelSuccess(true);
+  };
+
+  useEffect(() => {
+    if (!cancelSuccess) return;
+    const t = setTimeout(() => setCancelSuccess(false), 2000);
+    return () => clearTimeout(t);
+  }, [cancelSuccess]);
 
   return (
     <div className="min-h-screen bg-bg">
@@ -88,13 +103,13 @@ export default function Dashboard() {
               {['upcoming', 'past'].map((tab) => (
                 <button key={tab} onClick={() => setActiveTab(tab)}
                   className={`px-5 py-2 text-sm font-semibold rounded-xl capitalize transition-all ${activeTab === tab ? 'bg-teal text-white shadow-sm' : 'text-gray-500 hover:text-navy'}`}>
-                  {tab === 'upcoming' ? `Upcoming (${upcomingSessions.length})` : `Past (${pastSessions.length})`}
+                  {tab === 'upcoming' ? `Upcoming (${upcoming.length})` : `Past (${pastSessions.length})`}
                 </button>
               ))}
             </div>
 
             <div className="space-y-4">
-              {activeTab === 'upcoming' && upcomingSessions.map((s) => (
+              {activeTab === 'upcoming' && upcoming.map((s) => (
                 <div key={s.id} className="bg-white rounded-2xl shadow-sm overflow-hidden">
                   <div className="bg-gradient-to-r from-navy to-teal px-5 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -120,16 +135,27 @@ export default function Dashboard() {
                       ))}
                     </div>
                     <div className="flex gap-2 flex-wrap">
-                      <a href={`https://meet.jit.si/${s.jitsiRoom}`} target="_blank" rel="noopener noreferrer"
-                        className="btn-teal text-xs py-2 px-4 flex items-center gap-1.5">
+                      <Link to="/session" className="btn-teal text-xs py-2 px-4 flex items-center gap-1.5">
                         Join Session
-                      </a>
+                      </Link>
                       <CalendarDropdown session={s} />
-                      <button className="text-xs py-2 px-3 text-red-400 hover:text-red-600 transition-colors font-medium">Cancel</button>
+                      <button
+                        onClick={() => setCancelConfirm(s.id)}
+                        className="text-xs py-2 px-3 text-red-400 hover:text-red-600 transition-colors font-medium"
+                      >
+                        Cancel
+                      </button>
                     </div>
                   </div>
                 </div>
               ))}
+
+              {activeTab === 'upcoming' && upcoming.length === 0 && (
+                <div className="bg-white rounded-2xl shadow-sm p-10 text-center">
+                  <p className="text-gray-400 text-sm">No upcoming sessions.</p>
+                  <Link to="/browse" className="btn-teal text-sm mt-4 inline-block px-6 py-2.5">Browse Tutors</Link>
+                </div>
+              )}
 
               {activeTab === 'past' && pastSessions.map((s) => (
                 <div key={s.id} className="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -219,21 +245,50 @@ export default function Dashboard() {
             </div>
 
             {/* Next session reminder */}
-            {upcomingSessions[0] && (
+            {upcoming[0] && (
               <div className="bg-gradient-to-br from-navy to-teal rounded-2xl p-5 text-white">
                 <p className="text-xs font-semibold text-blue-200 uppercase tracking-wider mb-2">Next Session</p>
-                <p className="font-bold">{upcomingSessions[0].tutor}</p>
-                <p className="text-blue-100 text-sm">{upcomingSessions[0].subject}</p>
-                <p className="text-white/70 text-xs mt-1">{upcomingSessions[0].date} at {upcomingSessions[0].time}</p>
-                <a href={`https://meet.jit.si/${upcomingSessions[0].jitsiRoom}`} target="_blank" rel="noopener noreferrer"
-                  className="mt-3 block bg-white text-teal text-xs font-bold py-2 px-4 rounded-xl text-center hover:bg-blue-50 transition-colors">
+                <p className="font-bold">{upcoming[0].tutor}</p>
+                <p className="text-blue-100 text-sm">{upcoming[0].subject}</p>
+                <p className="text-white/70 text-xs mt-1">{upcoming[0].date} at {upcoming[0].time}</p>
+                <Link
+                  to="/session"
+                  className="mt-3 block bg-white text-teal text-xs font-bold py-2 px-4 rounded-xl text-center hover:bg-blue-50 transition-colors"
+                >
                   Join When Ready
-                </a>
+                </Link>
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Cancel confirmation modal */}
+      {cancelConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
+            <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+              <span className="text-red-500 text-2xl">✕</span>
+            </div>
+            <h3 className="text-lg font-bold text-navy mb-2">Cancel Session?</h3>
+            <p className="text-gray-500 text-sm mb-6">Are you sure you want to cancel this session?</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setCancelConfirm(null)}
+                className="flex-1 py-3 text-sm border-2 border-gray-200 rounded-xl text-navy font-semibold hover:border-teal transition-colors"
+              >
+                Keep Session
+              </button>
+              <button
+                onClick={confirmCancel}
+                className="flex-1 py-3 text-sm bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition-colors"
+              >
+                Yes, Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Rating modal */}
       {ratingModal && (
@@ -256,6 +311,16 @@ export default function Dashboard() {
               {['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent!'][hoverRating] || (ratings[ratingModal] ? ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent!'][ratings[ratingModal]] : 'Click a star to rate')}
             </p>
             <button onClick={() => setRatingModal(null)} className="text-sm text-gray-400 hover:text-gray-600 transition-colors">Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel success toast */}
+      {cancelSuccess && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+          <div className="bg-emerald-500 text-white px-6 py-3 rounded-2xl shadow-xl text-sm font-semibold flex items-center gap-2">
+            <IconCheck className="w-4 h-4" />
+            Session cancelled
           </div>
         </div>
       )}
