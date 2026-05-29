@@ -106,7 +106,7 @@ export default function Navbar() {
                       Dashboard
                     </Link>
                     <Link
-                      to={user.role === 'tutor' ? '/tutor-signup' : '/questionnaire'}
+                      to={user.role === 'tutor' ? '/tutor-signup' : '/dashboard'}
                       onClick={() => setDropdownOpen(false)}
                       className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     >

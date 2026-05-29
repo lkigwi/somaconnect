@@ -40,7 +40,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li><Link to="/" className="text-gray-400 hover:text-gold transition-colors text-xs">Home</Link></li>
               <li><Link to="/browse" className="text-gray-400 hover:text-gold transition-colors text-xs">Browse Tutors</Link></li>
-              <li><Link to="/questionnaire" className="text-gray-400 hover:text-gold transition-colors text-xs">Parent Portal</Link></li>
+              <li><Link to="/dashboard" className="text-gray-400 hover:text-gold transition-colors text-xs">Parent Portal</Link></li>
               <li><Link to="/student-questionnaire" className="text-gray-400 hover:text-gold transition-colors text-xs">Student Portal</Link></li>
               <li><Link to="/tutor-signup" className="text-gray-400 hover:text-gold transition-colors text-xs">Become a Tutor</Link></li>
               <li><Link to="/dashboard" className="text-gray-400 hover:text-gold transition-colors text-xs">Dashboard</Link></li>

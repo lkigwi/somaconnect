@@ -1,9 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { IconCheckCircle, IconClock, IconBanknotes, IconStar, IconCheck } from '../components/Icons';
 import CalendarDropdown from '../components/CalendarDropdown';
 
-// ── Data ─────────────────────────────────────────────────────
+// ── Chat bubble icon ──────────────────────────────────────────
+function ChatBubbleIcon({ className = 'w-4 h-4' }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+    </svg>
+  );
+}
+
+// ── Session data ──────────────────────────────────────────────
 const INITIAL_UPCOMING = [
   {
     id: 1, tutor: 'Grace Wanjiku', avatar: 'GW', subject: 'Mathematics',
@@ -36,6 +45,90 @@ const subjectProgress = [
   { subject: 'Chemistry', sessions: 2, progress: 40, trend: '+8%' },
 ];
 
+// Pre-loaded chat seeds per session id
+const CHAT_SEEDS = {
+  1: [
+    { id: 1, sender: 'Grace Wanjiku', text: 'Hello! Ready to start our Mathematics session?', time: '3:58 PM' },
+    { id: 2, sender: 'You', text: 'Yes, I have my textbook ready.', time: '3:59 PM' },
+  ],
+  2: [
+    { id: 1, sender: 'Amina Hassan', text: 'Hi! Looking forward to our English session.', time: '9:58 AM' },
+  ],
+};
+
+// ── Chat modal ────────────────────────────────────────────────
+function ChatModal({ session, messages, onSend, onClose }) {
+  const [input, setInput] = useState('');
+  const messagesEnd = useRef(null);
+
+  useEffect(() => {
+    messagesEnd.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const send = () => {
+    const text = input.trim();
+    if (!text) return;
+    const now = new Date();
+    const time = now.toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit' });
+    onSend({ id: Date.now(), sender: 'You', text, time });
+    setInput('');
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 px-4 pb-4 sm:pb-0">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md flex flex-col" style={{ height: '480px' }}>
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-navy to-teal rounded-t-3xl shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-sm shrink-0">
+              {session.avatar}
+            </div>
+            <div>
+              <p className="text-white font-bold text-sm">{session.tutor}</p>
+              <p className="text-white/70 text-xs">{session.subject}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="text-white/70 hover:text-white text-xl leading-none transition-colors">✕</button>
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          {messages.map((m) => (
+            <div key={m.id} className={`flex flex-col ${m.sender === 'You' ? 'items-end' : 'items-start'}`}>
+              <div className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
+                m.sender === 'You' ? 'bg-teal text-white' : 'bg-gray-100 text-navy'
+              }`}>
+                {m.text}
+              </div>
+              <span className="text-xs text-gray-400 mt-1">{m.sender} · {m.time}</span>
+            </div>
+          ))}
+          <div ref={messagesEnd} />
+        </div>
+
+        {/* Input */}
+        <div className="border-t border-gray-100 p-3 flex gap-2 shrink-0">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && send()}
+            placeholder="Type a message..."
+            className="flex-1 text-sm border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:border-teal transition-colors"
+          />
+          <button
+            onClick={send}
+            className="bg-teal text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-teal/90 transition-colors shrink-0"
+          >
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Dashboard ─────────────────────────────────────────────────
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('upcoming');
   const [ratingModal, setRatingModal] = useState(null);
@@ -44,6 +137,8 @@ export default function Dashboard() {
   const [upcoming, setUpcoming] = useState(INITIAL_UPCOMING);
   const [cancelConfirm, setCancelConfirm] = useState(null);
   const [cancelSuccess, setCancelSuccess] = useState(false);
+  const [chatSession, setChatSession] = useState(null);
+  const [chatMessages, setChatMessages] = useState(CHAT_SEEDS);
 
   const submitRating = (sessionId, rating) => {
     setRatings((prev) => ({ ...prev, [sessionId]: rating }));
@@ -56,11 +151,20 @@ export default function Dashboard() {
     setCancelSuccess(true);
   };
 
+  const sendChatMessage = (msg) => {
+    setChatMessages((prev) => ({
+      ...prev,
+      [chatSession]: [...(prev[chatSession] || []), msg],
+    }));
+  };
+
   useEffect(() => {
     if (!cancelSuccess) return;
     const t = setTimeout(() => setCancelSuccess(false), 2000);
     return () => clearTimeout(t);
   }, [cancelSuccess]);
+
+  const activeChatSession = chatSession ? upcoming.find((s) => s.id === chatSession) : null;
 
   return (
     <div className="min-h-screen bg-bg">
@@ -139,6 +243,14 @@ export default function Dashboard() {
                         Join Session
                       </Link>
                       <CalendarDropdown session={s} />
+                      <button
+                        onClick={() => setChatSession(s.id)}
+                        className="flex items-center gap-1.5 text-xs py-2 px-3 border-2 border-gray-200 rounded-xl text-navy font-semibold hover:border-teal transition-colors"
+                        title="Open chat"
+                      >
+                        <ChatBubbleIcon className="w-3.5 h-3.5" />
+                        Chat
+                      </button>
                       <button
                         onClick={() => setCancelConfirm(s.id)}
                         className="text-xs py-2 px-3 text-red-400 hover:text-red-600 transition-colors font-medium"
@@ -234,9 +346,9 @@ export default function Dashboard() {
                 {[
                   { label: 'Book a Session', to: '/booking', color: 'bg-teal text-white' },
                   { label: 'Browse Tutors', to: '/browse', color: 'bg-navy text-white' },
-                  { label: 'Parent Portal', to: '/questionnaire', color: 'bg-gold text-navy' },
+                  { label: 'Parent Portal', to: '/dashboard', color: 'bg-gold text-navy' },
                 ].map(({ label, to, color }) => (
-                  <Link key={to} to={to}
+                  <Link key={label} to={to}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl ${color} font-semibold text-sm transition-all hover:opacity-90 hover:-translate-y-0.5`}>
                     {label}
                   </Link>
@@ -263,7 +375,17 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Cancel confirmation modal */}
+      {/* ── Chat modal ─────────────────────────────────────────── */}
+      {chatSession && activeChatSession && (
+        <ChatModal
+          session={activeChatSession}
+          messages={chatMessages[chatSession] || []}
+          onSend={sendChatMessage}
+          onClose={() => setChatSession(null)}
+        />
+      )}
+
+      {/* ── Cancel confirmation modal ───────────────────────────── */}
       {cancelConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
@@ -290,7 +412,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Rating modal */}
+      {/* ── Rating modal ───────────────────────────────────────── */}
       {ratingModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
@@ -315,7 +437,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Cancel success toast */}
+      {/* ── Cancel success toast ────────────────────────────────── */}
       {cancelSuccess && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
           <div className="bg-emerald-500 text-white px-6 py-3 rounded-2xl shadow-xl text-sm font-semibold flex items-center gap-2">
