@@ -135,12 +135,14 @@ export default function Booking() {
           </div>
 
           <div className="flex gap-3 mb-4">
-            <Link
-              to="/session"
+            <a
+              href="https://8x8.vc/vpaas-magic-cookie-free/SomaConnectDemo"
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-teal flex-1 text-sm text-center py-3"
             >
               Join Video Session
-            </Link>
+            </a>
             <button
               onClick={downloadReceipt}
               className="flex-1 text-sm py-3 border-2 border-gray-200 rounded-xl text-navy font-semibold hover:border-teal transition-colors"

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import CalendarDropdown from '../components/CalendarDropdown';
 import {
   IconCheckCircle, IconClock, IconBanknotes, IconStar,
   IconSettings, IconUser, IconCheck, IconShieldCheck, IconPhone, IconId, IconAcademicCap,
@@ -225,10 +224,14 @@ export default function TutorDashboard() {
                         ))}
                       </div>
                       <div className="flex gap-2 flex-wrap">
-                        <Link to="/session" className="btn-teal text-xs py-2 px-4">
+                        <a
+                          href="https://8x8.vc/vpaas-magic-cookie-free/SomaConnectDemo"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn-teal text-xs py-2 px-4"
+                        >
                           Join Session
-                        </Link>
-                        <CalendarDropdown session={s} />
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -354,12 +357,14 @@ export default function TutorDashboard() {
                 <p className="font-bold">{upcomingSessions[0].student}</p>
                 <p className="text-blue-100 text-sm">{upcomingSessions[0].subject}</p>
                 <p className="text-white/70 text-xs mt-1">{upcomingSessions[0].date} at {upcomingSessions[0].time}</p>
-                <Link
-                  to="/session"
+                <a
+                  href="https://8x8.vc/vpaas-magic-cookie-free/SomaConnectDemo"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="mt-3 block bg-white text-teal text-xs font-bold py-2 px-4 rounded-xl text-center hover:bg-blue-50 transition-colors"
                 >
                   Join When Ready
-                </Link>
+                </a>
               </div>
             )}
           </div>

@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { IconCheckCircle, IconClock, IconBanknotes, IconStar, IconCheck } from '../components/Icons';
-import CalendarDropdown from '../components/CalendarDropdown';
 
 // ── Chat bubble icon ──────────────────────────────────────────
 function ChatBubbleIcon({ className = 'w-4 h-4' }) {
@@ -239,10 +238,14 @@ export default function Dashboard() {
                       ))}
                     </div>
                     <div className="flex gap-2 flex-wrap">
-                      <Link to="/session" className="btn-teal text-xs py-2 px-4 flex items-center gap-1.5">
+                      <a
+                        href="https://8x8.vc/vpaas-magic-cookie-free/SomaConnectDemo"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-teal text-xs py-2 px-4 flex items-center gap-1.5"
+                      >
                         Join Session
-                      </Link>
-                      <CalendarDropdown session={s} />
+                      </a>
                       <button
                         onClick={() => setChatSession(s.id)}
                         className="flex items-center gap-1.5 text-xs py-2 px-3 border-2 border-gray-200 rounded-xl text-navy font-semibold hover:border-teal transition-colors"
@@ -363,12 +366,14 @@ export default function Dashboard() {
                 <p className="font-bold">{upcoming[0].tutor}</p>
                 <p className="text-blue-100 text-sm">{upcoming[0].subject}</p>
                 <p className="text-white/70 text-xs mt-1">{upcoming[0].date} at {upcoming[0].time}</p>
-                <Link
-                  to="/session"
+                <a
+                  href="https://8x8.vc/vpaas-magic-cookie-free/SomaConnectDemo"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="mt-3 block bg-white text-teal text-xs font-bold py-2 px-4 rounded-xl text-center hover:bg-blue-50 transition-colors"
                 >
                   Join When Ready
-                </Link>
+                </a>
               </div>
             )}
           </div>
