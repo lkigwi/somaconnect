@@ -40,7 +40,6 @@ const upcomingSessions = [
     time: '4:00 PM',
     duration: '1 Hour',
     amount: 1020,
-    jitsiRoom: 'SomaConnect-Demo',
   },
   {
     id: 2,
@@ -51,7 +50,6 @@ const upcomingSessions = [
     time: '5:00 PM',
     duration: '1.5 Hours',
     amount: 1530,
-    jitsiRoom: 'SomaConnect-Demo',
   },
 ];
 
@@ -225,7 +223,7 @@ export default function TutorDashboard() {
                       </div>
                       <div className="flex gap-2 flex-wrap">
                         <a
-                          href="https://8x8.vc/vpaas-magic-cookie-free/SomaConnectDemo"
+                          href="https://meet.google.com/abc-defg-hij"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="btn-teal text-xs py-2 px-4"
@@ -358,7 +356,7 @@ export default function TutorDashboard() {
                 <p className="text-blue-100 text-sm">{upcomingSessions[0].subject}</p>
                 <p className="text-white/70 text-xs mt-1">{upcomingSessions[0].date} at {upcomingSessions[0].time}</p>
                 <a
-                  href="https://8x8.vc/vpaas-magic-cookie-free/SomaConnectDemo"
+                  href="https://meet.google.com/abc-defg-hij"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-3 block bg-white text-teal text-xs font-bold py-2 px-4 rounded-xl text-center hover:bg-blue-50 transition-colors"

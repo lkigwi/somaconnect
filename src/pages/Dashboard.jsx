@@ -15,13 +15,13 @@ function ChatBubbleIcon({ className = 'w-4 h-4' }) {
 const INITIAL_UPCOMING = [
   {
     id: 1, tutor: 'Grace Wanjiku', avatar: 'GW', subject: 'Mathematics',
-    date: 'Thu, 29 May 2026', time: '4:00 PM', duration: '1 Hour', mode: 'Online (Jitsi)',
-    amount: 850, status: 'confirmed', jitsiRoom: 'SC-MATH-2026-A1B2',
+    date: 'Thu, 29 May 2026', time: '4:00 PM', duration: '1 Hour', mode: 'Online (Google Meet)',
+    amount: 850, status: 'confirmed',
   },
   {
     id: 2, tutor: 'Amina Hassan', avatar: 'AH', subject: 'English Literature',
-    date: 'Sat, 31 May 2026', time: '10:00 AM', duration: '1.5 Hours', mode: 'Online (Jitsi)',
-    amount: 1200, status: 'pending', jitsiRoom: 'SC-ENG-2026-C3D4',
+    date: 'Sat, 31 May 2026', time: '10:00 AM', duration: '1.5 Hours', mode: 'Online (Google Meet)',
+    amount: 1200, status: 'pending',
   },
 ];
 
@@ -239,7 +239,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex gap-2 flex-wrap">
                       <a
-                        href="https://8x8.vc/vpaas-magic-cookie-free/SomaConnectDemo"
+                        href="https://meet.google.com/abc-defg-hij"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn-teal text-xs py-2 px-4 flex items-center gap-1.5"
@@ -367,7 +367,7 @@ export default function Dashboard() {
                 <p className="text-blue-100 text-sm">{upcoming[0].subject}</p>
                 <p className="text-white/70 text-xs mt-1">{upcoming[0].date} at {upcoming[0].time}</p>
                 <a
-                  href="https://8x8.vc/vpaas-magic-cookie-free/SomaConnectDemo"
+                  href="https://meet.google.com/abc-defg-hij"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-3 block bg-white text-teal text-xs font-bold py-2 px-4 rounded-xl text-center hover:bg-blue-50 transition-colors"

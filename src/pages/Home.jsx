@@ -16,7 +16,7 @@ const stats = [
 const steps = [
   { step: '01', title: 'Create your profile', desc: 'Sign up as a Parent, Student, or Tutor/Mentor in under 2 minutes.', Icon: IconUserPlus },
   { step: '02', title: 'Find your match', desc: 'Browse verified tutors and mentors filtered by service, level, and availability.', Icon: IconSearch },
-  { step: '03', title: 'Book a session', desc: 'Pick a time slot, pay securely via M-Pesa, and get a Jitsi video link instantly.', Icon: IconCalendar },
+  { step: '03', title: 'Book a session', desc: 'Pick a time slot, pay securely via M-Pesa, and get a Google Meet link instantly.', Icon: IconCalendar },
   { step: '04', title: 'Learn & grow', desc: 'Attend your session, track progress, and rate your experience.', Icon: IconRocket },
 ];
 

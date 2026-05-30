@@ -94,7 +94,7 @@ export default function Booking() {
       `Method:        M-Pesa`,
       '',
       '--- VIDEO SESSION ---',
-      `Join: https://meet.jit.si/SomaConnect-Demo`,
+      `Join: https://meet.google.com/abc-defg-hij`,
       '',
       '========================================',
       'Thank you for choosing SomaConnect!',
@@ -136,7 +136,7 @@ export default function Booking() {
 
           <div className="flex gap-3 mb-4">
             <a
-              href="https://8x8.vc/vpaas-magic-cookie-free/SomaConnectDemo"
+              href="https://meet.google.com/abc-defg-hij"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-teal flex-1 text-sm text-center py-3"
@@ -161,7 +161,6 @@ export default function Booking() {
                 : '',
               time: selectedSlot || '',
               duration: sessionType,
-              jitsiRoom: 'SomaConnect-Demo',
             }} />
           </div>
 
