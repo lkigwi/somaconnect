@@ -94,7 +94,7 @@ export default function Booking() {
       `Method:        M-Pesa`,
       '',
       '--- VIDEO SESSION ---',
-      `Join: https://meet.google.com/abc-defg-hij`,
+      `Join: https://meet.google.com/uox-xpzf-upm`,
       '',
       '========================================',
       'Thank you for choosing SomaConnect!',
@@ -136,7 +136,7 @@ export default function Booking() {
 
           <div className="flex gap-3 mb-4">
             <a
-              href="https://meet.google.com/abc-defg-hij"
+              href="https://meet.google.com/uox-xpzf-upm"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-teal flex-1 text-sm text-center py-3"
