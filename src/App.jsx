@@ -11,6 +11,7 @@ import Booking from './pages/Booking';
 import Dashboard from './pages/Dashboard';
 import TutorDashboard from './pages/TutorDashboard';
 import SignIn from './pages/SignIn';
+import PolicyPage from './pages/PolicyPage';
 
 export default function App() {
   return (
@@ -29,6 +30,9 @@ export default function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/tutor-dashboard" element={<TutorDashboard />} />
               <Route path="/signin" element={<SignIn />} />
+              <Route path="/privacy" element={<PolicyPage policy="privacy" />} />
+              <Route path="/terms" element={<PolicyPage policy="terms" />} />
+              <Route path="/safeguarding" element={<PolicyPage policy="safeguarding" />} />
             </Routes>
           </main>
           <Footer />

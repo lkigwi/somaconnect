@@ -77,9 +77,9 @@ export default function Footer() {
         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-gray-500">© 2026 SomaConnect. All rights reserved. | Nairobi, Kenya</p>
           <div className="flex gap-6 text-xs text-gray-500">
-            <span className="hover:text-gold cursor-pointer transition-colors">Privacy Policy</span>
-            <span className="hover:text-gold cursor-pointer transition-colors">Terms of Service</span>
-            <span className="hover:text-gold cursor-pointer transition-colors">Safeguarding Policy</span>
+            <Link to="/privacy" className="hover:text-gold transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-gold transition-colors">Terms of Service</Link>
+            <Link to="/safeguarding" className="hover:text-gold transition-colors">Safeguarding Policy</Link>
           </div>
         </div>
       </div>

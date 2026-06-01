@@ -103,9 +103,6 @@ export default function SignIn() {
         </form>
 
         <div className="mt-6 text-center space-y-3">
-          <p className="text-xs text-gray-400">
-            Tip: use an email with "tutor" to log in as a tutor (e.g. tutor@email.com)
-          </p>
           <div className="border-t border-gray-100 pt-4">
             <p className="text-sm text-gray-500">
               Don't have an account?{' '}

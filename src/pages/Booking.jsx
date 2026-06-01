@@ -286,7 +286,7 @@ export default function Booking() {
                   <div className="flex justify-between"><span className="text-gray-500">Date</span><span className="font-medium text-navy">{formatDay(selectedDate)}</span></div>
                   <div className="flex justify-between"><span className="text-gray-500">Time</span><span className="font-medium text-navy">{selectedSlot}</span></div>
                   <div className="flex justify-between"><span className="text-gray-500">Subject</span><span className="font-medium text-navy">{tutor.subject}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-500">Mode</span><span className="font-medium text-navy">Online (Jitsi)</span></div>
+                  <div className="flex justify-between"><span className="text-gray-500">Mode</span><span className="font-medium text-navy">Online (Google Meet)</span></div>
                 </div>
 
                 <div className="flex gap-3">
@@ -403,8 +403,8 @@ export default function Booking() {
                 )}
 
                 <div className="bg-teal/10 rounded-xl p-3 text-xs text-teal">
-                  <strong>🎥 Online via Jitsi</strong><br />
-                  You'll receive a unique video room link after payment.
+                  <strong>🎥 Online via Google Meet</strong><br />
+                  You'll receive a Google Meet link after payment.
                 </div>
 
                 <div className="flex gap-2 text-xs text-gray-400">
