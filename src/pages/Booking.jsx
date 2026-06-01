@@ -98,7 +98,7 @@ export default function Booking() {
       '',
       '========================================',
       'Thank you for choosing SomaConnect!',
-      'hello@somaconnect.co.ke | +254 700 000 000',
+      'hello@somaconnect.co.ke | +254 707 506 650',
       '========================================',
     ].join('\n');
     const blob = new Blob([content], { type: 'text/plain' });

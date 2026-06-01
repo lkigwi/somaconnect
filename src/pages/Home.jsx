@@ -7,8 +7,8 @@ import {
 import { useAuth } from '../context/AuthContext';
 
 const stats = [
-  { value: '1,200+', label: 'Learners Enrolled' },
-  { value: '340+', label: 'Verified Tutors & Mentors' },
+  { value: '500+', label: 'Learners Enrolled' },
+  { value: '50+', label: 'Verified Tutors & Mentors' },
   { value: '5', label: 'Service Categories' },
   { value: '4.8★', label: 'Average Rating' },
 ];
@@ -314,7 +314,7 @@ export default function Home() {
             Ready to unlock your potential?
           </h2>
           <p className="text-blue-100 text-lg mb-8 max-w-xl mx-auto">
-            Join over 1,200 learners already transforming their futures with SomaConnect.
+            Join hundreds of learners already transforming their futures with SomaConnect.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/questionnaire" className="btn-primary text-center">Start as a Parent</Link>

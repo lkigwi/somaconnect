@@ -61,7 +61,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2.5 text-gray-400">
                 <IconPhone className="w-4 h-4 text-teal shrink-0" />
-                <span className="text-xs">+254 700 000 000</span>
+                <span className="text-xs">+254 707 506 650</span>
               </li>
             </ul>
             <div className="flex gap-3 mt-5">
