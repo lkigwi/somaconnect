@@ -3,6 +3,10 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { IconLock, IconEnvelope } from '../components/Icons';
 
+const ADMIN_EMAIL    = 'admin@somaconnect.co.ke';
+const ADMIN_PASSWORD = 'soma2026';
+const ADMIN_NAME     = 'Lemayian Kigwi';
+
 export default function SignIn() {
   const { signIn } = useAuth();
   const navigate = useNavigate();
@@ -11,29 +15,39 @@ export default function SignIn() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
-
-    if (!email || !password) {
-      setError('Please enter your email and password.');
-      return;
-    }
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
-      return;
-    }
+    if (!email || !password) { setError('Please enter your email and password.'); return; }
+    if (password.length < 6) { setError('Password must be at least 6 characters.'); return; }
 
     setLoading(true);
     setTimeout(() => {
+      // Admin account
+      if (email.toLowerCase() === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+        signIn({ name: ADMIN_NAME, email: ADMIN_EMAIL, role: 'admin' });
+        navigate('/dashboard');
+        return;
+      }
+      // Tutor account (email contains 'tutor')
       const isTutor = email.toLowerCase().includes('tutor');
       const name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
       signIn({ name: isTutor ? 'Jane Wanjiku' : name, email, role: isTutor ? 'tutor' : 'parent' });
       navigate(isTutor ? '/tutor-dashboard' : '/dashboard');
     }, 800);
+  };
+
+  const handleDemoLogin = () => {
+    setDemoLoading(true);
+    setTimeout(() => {
+      signIn({ name: ADMIN_NAME, email: ADMIN_EMAIL, role: 'admin' });
+      navigate('/dashboard');
+    }, 600);
   };
 
   return (
@@ -45,6 +59,26 @@ export default function SignIn() {
           </div>
           <h1 className="text-2xl font-black text-navy">Welcome Back</h1>
           <p className="text-gray-500 text-sm mt-1">Sign in to your SomaConnect account</p>
+        </div>
+
+        {/* Demo login button */}
+        <button
+          onClick={handleDemoLogin}
+          disabled={demoLoading}
+          className="w-full mb-5 flex items-center justify-center gap-2 py-3.5 rounded-xl border-2 border-teal bg-teal/5 text-teal font-bold text-sm hover:bg-teal hover:text-white transition-all duration-200 disabled:opacity-60"
+        >
+          {demoLoading ? (
+            <span className="w-4 h-4 border-2 border-teal border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <span>🎬</span>
+          )}
+          {demoLoading ? 'Loading demo...' : 'Run Demo (Admin View)'}
+        </button>
+
+        <div className="flex items-center gap-3 mb-5">
+          <div className="flex-1 h-px bg-gray-100" />
+          <span className="text-xs text-gray-400 font-medium">or sign in manually</span>
+          <div className="flex-1 h-px bg-gray-100" />
         </div>
 
         {redirectMessage && (
@@ -73,12 +107,19 @@ export default function SignIn() {
             <div className="relative">
               <IconLock className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
-                type="password"
+                type={showPass ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm outline-none focus:border-teal transition-colors"
+                className="w-full border border-gray-200 rounded-xl pl-10 pr-14 py-3 text-sm outline-none focus:border-teal transition-colors"
               />
+              <button
+                type="button"
+                onClick={() => setShowPass(!showPass)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400 hover:text-teal transition-colors"
+              >
+                {showPass ? 'Hide' : 'Show'}
+              </button>
             </div>
           </div>
 

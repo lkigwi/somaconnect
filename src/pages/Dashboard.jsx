@@ -112,9 +112,28 @@ export default function Dashboard() {
   const initials = displayName.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
   const roleLabel = user?.role === 'tutor' ? 'Tutor' : user?.role === 'parent' ? 'Parent' : 'Student';
 
+  // Admin/demo account sees rich data — all other accounts start fresh
+  const isAdmin = user?.role === 'admin' || user?.email === 'admin@somaconnect.co.ke';
+
+  const STAT_CARDS_DEMO = [
+    { label: 'Sessions Completed', value: '12', Icon: IconCheckCircle, colorCls: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
+    { label: 'Hours Learned', value: '14.5', Icon: IconClock, colorCls: 'bg-blue-50 text-blue-600 border-blue-100' },
+    { label: 'Total Spent', value: 'KSh 11,400', Icon: IconBanknotes, colorCls: 'bg-purple-50 text-purple-600 border-purple-100' },
+    { label: 'Avg. Rating', value: '4.9 ★', Icon: IconStar, colorCls: 'bg-amber-50 text-amber-600 border-amber-100' },
+  ];
+  const STAT_CARDS_NEW = [
+    { label: 'Sessions Completed', value: '0', Icon: IconCheckCircle, colorCls: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
+    { label: 'Hours Learned', value: '0', Icon: IconClock, colorCls: 'bg-blue-50 text-blue-600 border-blue-100' },
+    { label: 'Total Spent', value: 'KSh 0', Icon: IconBanknotes, colorCls: 'bg-purple-50 text-purple-600 border-purple-100' },
+    { label: 'Avg. Rating', value: '— ★', Icon: IconStar, colorCls: 'bg-amber-50 text-amber-600 border-amber-100' },
+  ];
+  const activeStatCards = isAdmin ? STAT_CARDS_DEMO : STAT_CARDS_NEW;
+  const activeUpcoming  = isAdmin ? INITIAL_UPCOMING : [];
+  const activePast      = isAdmin ? INITIAL_PAST : [];
+
   const [activeTab, setActiveTab] = useState('upcoming');
-  const [upcoming, setUpcoming] = useState(INITIAL_UPCOMING);
-  const [pastSessions, setPastSessions] = useState(INITIAL_PAST);
+  const [upcoming, setUpcoming] = useState(activeUpcoming);
+  const [pastSessions, setPastSessions] = useState(activePast);
 
   // Rating
   const [ratingModal, setRatingModal] = useState(null);        // session object
@@ -133,8 +152,9 @@ export default function Dashboard() {
   const [chatSession, setChatSession] = useState(null);
   const [chatMessages, setChatMessages] = useState(CHAT_SEEDS);
 
-  // On mount: check for unrated past sessions → show mandatory rating
+  // On mount: check for unrated past sessions → show mandatory rating (admin/demo only)
   useEffect(() => {
+    if (!isAdmin) return;
     const unrated = pastSessions.find((s) => !s.rated);
     if (unrated) setMandatoryRating(unrated);
   }, []); // eslint-disable-line
@@ -219,7 +239,7 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {STAT_CARDS.map(({ label, value, Icon, colorCls }) => {
+          {activeStatCards.map(({ label, value, Icon, colorCls }) => {
             const [bg, text, border] = colorCls.split(' ');
             return (
               <div key={label} className={`bg-white rounded-2xl shadow-sm p-5 border ${border}`}>
@@ -386,8 +406,15 @@ export default function Dashboard() {
             {/* Progress */}
             <div className="bg-white rounded-2xl shadow-sm p-5">
               <h3 className="font-bold text-navy text-base mb-4">Subject Progress</h3>
+              {!isAdmin && (
+                <div className="text-center py-6">
+                  <p className="text-3xl mb-2">📚</p>
+                  <p className="text-gray-400 text-sm">No sessions yet.</p>
+                  <p className="text-gray-400 text-xs mt-1">Progress will appear here after your first session.</p>
+                </div>
+              )}
               <div className="space-y-4">
-                {SUBJECT_PROGRESS.map(({ subject, sessions, progress, trend }) => (
+                {isAdmin && SUBJECT_PROGRESS.map(({ subject, sessions, progress, trend }) => (
                   <div key={subject}>
                     <div className="flex justify-between items-center mb-1.5">
                       <span className="text-sm font-medium text-navy">{subject}</span>
