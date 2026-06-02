@@ -13,6 +13,7 @@ import TutorDashboard from './pages/TutorDashboard';
 import SignIn from './pages/SignIn';
 import PolicyPage from './pages/PolicyPage';
 import SessionPage from './pages/SessionPage';
+import NotFound from './pages/NotFound';
 
 export default function App() {
   return (
@@ -40,6 +41,7 @@ export default function App() {
                   <Route path="/privacy" element={<PolicyPage policy="privacy" />} />
                   <Route path="/terms" element={<PolicyPage policy="terms" />} />
                   <Route path="/safeguarding" element={<PolicyPage policy="safeguarding" />} />
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
               <Footer />

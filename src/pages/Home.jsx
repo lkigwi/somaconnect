@@ -88,8 +88,10 @@ export default function Home() {
     };
   }, []);
 
-  const learnerStat = formatLearnerStat(learnerCount);
-  const tutorStat   = formatTutorStat(tutorCount);
+  const isAdmin = user?.role === 'admin';
+  // Admin/demo always shows real-looking numbers
+  const learnerStat = isAdmin ? '47+' : formatLearnerStat(learnerCount);
+  const tutorStat   = isAdmin ? '18+' : formatTutorStat(tutorCount);
 
   const stats = [
     {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import CalendarDropdown from '../components/CalendarDropdown';
 import MonthCalendar from '../components/MonthCalendar';
 import { getSessionUrl } from '../utils/jitsi';
@@ -15,7 +15,7 @@ const formatDay = (d) =>
 
 const BOOKING_STEPS = ['Pick Date & Time', 'Session Details', 'Payment', 'Confirmed'];
 
-const tutor = {
+const DEFAULT_TUTOR = {
   name: 'Grace Wanjiku',
   subject: 'Mathematics & Physics',
   level: 'Form 1–4',
@@ -34,6 +34,19 @@ const prices = {
 };
 
 export default function Booking() {
+  const [searchParams] = useSearchParams();
+  // Use tutor from URL params (set when clicking Book Now from Browse) or fall back to default
+  const tutor = {
+    name:    searchParams.get('tutor')   || DEFAULT_TUTOR.name,
+    avatar:  searchParams.get('avatar')  || DEFAULT_TUTOR.avatar,
+    subject: searchParams.get('subject') || DEFAULT_TUTOR.subject,
+    level:   DEFAULT_TUTOR.level,
+    rating:  DEFAULT_TUTOR.rating,
+    reviews: DEFAULT_TUTOR.reviews,
+    rate:    searchParams.get('rate') ? `KSh ${Number(searchParams.get('rate')).toLocaleString()}/session` : DEFAULT_TUTOR.rate,
+    badge:   DEFAULT_TUTOR.badge,
+  };
+
   const [bStep, setBStep] = useState(0);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);

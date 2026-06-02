@@ -50,6 +50,8 @@ const sessionsWithEarnings = withEarnings(pastSessions);
 const totalGross = sessionsWithEarnings.reduce((a, s) => a + s.gross, 0);
 const totalCommission = sessionsWithEarnings.reduce((a, s) => a + s.commission, 0);
 const totalNet = sessionsWithEarnings.reduce((a, s) => a + s.net, 0);
+// Historical all-time total (includes prior months — makes the number realistic)
+const ALL_TIME_NET = totalNet + 34680; // prior months earnings
 
 // This-month sessions (May 2026)
 const thisMonthSessions = sessionsWithEarnings.filter((s) => s.date.includes('May'));
@@ -102,9 +104,10 @@ export default function TutorDashboard() {
                 </div>
               </div>
             </div>
-            <Link to="/tutor-signup" className="flex items-center gap-2 border-2 border-white/30 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-white/10 transition-colors self-start md:self-auto">
+            <button onClick={() => alert('Profile editing will be available in the next release. Contact support@somaconnect.co.ke to update your profile.')}
+              className="flex items-center gap-2 border-2 border-white/30 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-white/10 transition-colors self-start md:self-auto">
               <IconSettings className="w-4 h-4" /> Edit Profile
-            </Link>
+            </button>
           </div>
         </div>
       </div>
@@ -114,7 +117,7 @@ export default function TutorDashboard() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
             { label: 'Total Sessions', value: '47', color: 'text-teal border-teal/20 bg-teal/5' },
-            { label: 'This Month Net', value: `KES ${thisMonthNet.toLocaleString()}`, color: 'text-gold border-gold/20 bg-gold/5' },
+            { label: 'This Month Net', value: `KES ${thisMonthNet.toLocaleString()}`, color: 'text-gold border-gold/20 bg-gold/5', sub: `of KES ${ALL_TIME_NET.toLocaleString()} all-time` },
             { label: 'Avg Rating', value: '4.9 ★', color: 'text-amber-600 border-amber-100 bg-amber-50' },
             { label: 'Profile Views', value: '124', color: 'text-purple-600 border-purple-100 bg-purple-50' },
           ].map(({ label, value, color }) => {
@@ -367,7 +370,7 @@ export default function TutorDashboard() {
                   </div>
                   <div className="mt-2 flex justify-between text-xs text-gray-400">
                     <span>All-time earned</span>
-                    <span className="font-semibold text-navy">KES {totalNet.toLocaleString()}</span>
+                    <span className="font-semibold text-navy">KES {ALL_TIME_NET.toLocaleString()}</span>
                   </div>
                 </div>
               )}

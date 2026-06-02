@@ -314,7 +314,7 @@ export default function Browse() {
                           if (!user) {
                             navigate('/signin', { state: { message: 'Please sign in to book a session.' } });
                           } else {
-                            navigate('/booking');
+                            navigate(`/booking?tutor=${encodeURIComponent(p.name)}&avatar=${p.avatar}&subject=${encodeURIComponent(p.subject)}&rate=${p.rate}`);
                           }
                         }}
                         className="btn-teal text-sm text-center py-2.5 w-full"

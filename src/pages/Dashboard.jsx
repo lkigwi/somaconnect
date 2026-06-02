@@ -109,7 +109,7 @@ export default function Dashboard() {
   const { user } = useAuth();
   const displayName = user?.name || 'Learner';
   const initials = displayName.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
-  const roleLabel = user?.role === 'tutor' ? 'Tutor' : user?.role === 'parent' ? 'Parent' : 'Student';
+  const roleLabel = user?.role === 'tutor' ? 'Tutor' : user?.role === 'admin' ? 'Demo Account' : user?.role === 'parent' ? 'Parent' : 'Student';
 
   // Admin/demo account sees rich data — all other accounts start fresh
   const isAdmin = user?.role === 'admin' || user?.email === 'admin@somaconnect.co.ke';
@@ -263,8 +263,8 @@ export default function Dashboard() {
               {/* Upcoming sessions */}
               {activeTab === 'upcoming' && upcoming.map((s) => {
                 const sessionUrl = getSessionUrl({ bookingId: s.bookingId, tutor: s.tutor, subject: s.subject, avatar: s.avatar, role: 'student', sessionId: s.id });
-                // Admin demo: first session is always joinable so the demo works at any time
-                const canJoin = (isAdmin && s.id === 1) || studentCanJoin(s.date, s.time);
+                // Admin demo: all sessions always joinable so the demo works at any time
+                const canJoin = isAdmin || studentCanJoin(s.date, s.time);
                 const countdown = formatCountdown(s.date, s.time);
                 const isPending = s.status === 'reschedule_pending';
 
@@ -297,14 +297,12 @@ export default function Dashboard() {
                       </div>
 
                       {/* Join countdown pill */}
-                      {countdown && (
-                        <div className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full mb-3 ${
-                          canJoin ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
-                        }`}>
-                          <span>{canJoin ? '🟢' : '⏱'}</span>
-                          {countdown}
-                        </div>
-                      )}
+                      <div className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full mb-3 ${
+                        canJoin ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
+                      }`}>
+                        <span>{canJoin ? '🟢' : '⏱'}</span>
+                        {canJoin ? 'Ready — join now' : (countdown || 'Scheduled')}
+                      </div>
 
                       <div className="flex gap-2 flex-wrap">
                         {canJoin ? (
@@ -346,6 +344,13 @@ export default function Dashboard() {
               )}
 
               {/* Past sessions */}
+              {activeTab === 'past' && pastSessions.length === 0 && (
+                <div className="bg-white rounded-2xl shadow-sm p-10 text-center">
+                  <p className="text-3xl mb-3">🏆</p>
+                  <p className="text-gray-500 text-sm font-medium">No completed sessions yet.</p>
+                  <p className="text-gray-400 text-xs mt-1">Your session history will appear here.</p>
+                </div>
+              )}
               {activeTab === 'past' && pastSessions.map((s) => (
                 <div key={s.id} className="bg-white rounded-2xl shadow-sm overflow-hidden">
                   <div className="bg-gradient-to-r from-navy to-teal px-5 py-3 flex items-center justify-between">
