@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import FormField, { inputCls } from '../components/FormField';
 import { validators } from '../utils/validation';
 import { IconUser, IconBook, IconBriefcase, IconHeart, IconSun, IconTrophy, IconCheck, IconSettings } from '../components/Icons';
+import { incrementLearnerCount } from '../utils/counter';
 
 const STEPS = [
   { id: 1, title: 'Your Details', Icon: IconUser },
@@ -131,6 +132,12 @@ export default function StudentQuestionnaire() {
   const next = () => {
     if (validateStep()) {
       if (step === 4) {
+        // Save preferences for smart tutor filtering
+        localStorage.setItem('soma_user_prefs', JSON.stringify({
+          category: form.services[0] || 'academic',
+          subjects: form.subjects || [],
+        }));
+        incrementLearnerCount();
         setSubmitted(true);
         setTimeout(() => navigate('/browse'), 3000);
       } else {

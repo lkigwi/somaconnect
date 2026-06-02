@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import FormField, { inputCls } from '../components/FormField';
 import { validators } from '../utils/validation';
 import { IconBook, IconBriefcase, IconHeart, IconSun, IconTrophy, IconCheck } from '../components/Icons';
+import { incrementLearnerCount } from '../utils/counter';
 import { useAuth } from '../context/AuthContext';
 
 const STEPS = [
@@ -587,8 +588,16 @@ export default function ParentQuestionnaire() {
                 Continue
               </button>
             ) : (
-              <button onClick={() => setSubmitted(true)} className="flex-1 btn-primary py-3 text-sm">
-                Submit & Find My Match
+              <button onClick={() => {
+                // Save preferences for smart tutor filtering
+                localStorage.setItem('soma_user_prefs', JSON.stringify({
+                  category: form.services[0] || 'academic',
+                  subjects: form.selectedSubjects,
+                }));
+                incrementLearnerCount();
+                setSubmitted(true);
+              }} className="flex-1 btn-primary py-3 text-sm">
+                Sign Up For Your Child →
               </button>
             )}
           </div>

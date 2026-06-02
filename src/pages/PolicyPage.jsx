@@ -77,7 +77,7 @@ export const policies = {
       },
       {
         heading: 'Online Session Safety',
-        body: 'All sessions are conducted via Google Meet. Parents are encouraged to be present or nearby during online sessions, especially for young learners. Sessions should never move to unmonitored platforms or private messaging outside SomaConnect.',
+        body: 'All sessions are conducted via Jitsi Meet — a secure, private video room unique to each booking. Parents are encouraged to be present or nearby during online sessions, especially for young learners. Sessions should never move to unmonitored platforms or private messaging outside SomaConnect.',
       },
       {
         heading: 'Reporting Concerns',

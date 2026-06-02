@@ -104,17 +104,41 @@ export default function Browse() {
     }
   }, [user, navigate]);
 
+  // Read preferences saved during questionnaire
+  const userPrefs = (() => {
+    try { return JSON.parse(localStorage.getItem('soma_user_prefs') || '{}'); } catch { return {}; }
+  })();
+
+  const catMap = {
+    academic: 'Academic Tutoring', career: 'Career Guidance',
+    mental: 'Mental Health & Wellness', faith: 'Faith & Spiritual Mentorship',
+    leadership: 'Leadership Mentorship',
+  };
+  const defaultCategory = catMap[userPrefs.category] || 'All Categories';
+  const preferredSubjects = userPrefs.subjects || [];
+
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('All Categories');
+  const [category, setCategory] = useState(defaultCategory);
   const [role, setRole] = useState('All Roles');
   const [mode, setMode] = useState('All Modes');
   const [location, setLocation] = useState('All Locations');
   const [maxRate, setMaxRate] = useState(2000);
   const [showFilters, setShowFilters] = useState(false);
+  const isPersonalised = defaultCategory !== 'All Categories' || preferredSubjects.length > 0;
 
   if (!user) return null;
 
-  const filtered = allProfiles.filter((p) => {
+  // Sort preferred subjects to top
+  const sortByRelevance = (profiles) => {
+    if (!preferredSubjects.length) return profiles;
+    return [...profiles].sort((a, b) => {
+      const aMatch = a.subjects?.some((s) => preferredSubjects.includes(s)) ? -1 : 0;
+      const bMatch = b.subjects?.some((s) => preferredSubjects.includes(s)) ? -1 : 0;
+      return aMatch - bMatch;
+    });
+  };
+
+  const filtered = sortByRelevance(allProfiles.filter((p) => {
     const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.subject.toLowerCase().includes(search.toLowerCase());
     const matchCategory = category === 'All Categories' || p.category === category;
     const matchRole = role === 'All Roles' || p.role === role;
@@ -122,7 +146,7 @@ export default function Browse() {
     const matchLocation = location === 'All Locations' || p.location === location;
     const matchRate = p.rate <= maxRate;
     return matchSearch && matchCategory && matchRole && matchMode && matchLocation && matchRate;
-  });
+  }));
 
   return (
     <div className="min-h-screen bg-bg">
@@ -161,6 +185,18 @@ export default function Browse() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        {isPersonalised && (
+          <div className="bg-teal/5 border border-teal/20 rounded-2xl px-5 py-3 mb-5 flex items-center gap-3">
+            <span className="text-lg">🎯</span>
+            <div>
+              <p className="text-sm font-semibold text-navy">Personalised for you</p>
+              <p className="text-xs text-gray-500">Results sorted based on your questionnaire preferences
+                {preferredSubjects.length > 0 && ` — ${preferredSubjects.join(', ')}`}.
+                <button onClick={() => { localStorage.removeItem('soma_user_prefs'); window.location.reload(); }} className="ml-2 text-red-400 hover:text-red-600 text-xs underline">Reset</button>
+              </p>
+            </div>
+          </div>
+        )}
         <div className="flex items-center justify-between mb-6">
           <p className="text-sm text-gray-600 font-medium">
             Showing <span className="text-teal font-bold">{filtered.length}</span> of {allProfiles.length} professionals
@@ -236,7 +272,12 @@ export default function Browse() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                 {filtered.map((p, i) => (
-                  <div key={i} className="card overflow-hidden group flex flex-col">
+                  <div key={i} className={`card overflow-hidden group flex flex-col ${p.subjects?.some((s) => preferredSubjects.includes(s)) ? 'ring-2 ring-teal' : ''}`}>
+                    {p.subjects?.some((s) => preferredSubjects.includes(s)) && (
+                      <div className="bg-teal/10 border-b border-teal/20 px-4 py-1.5 text-xs font-semibold text-teal flex items-center gap-1.5">
+                        🎯 Matches your preferences
+                      </div>
+                    )}
                     <div className="bg-gradient-to-br from-navy to-teal p-5 flex items-center gap-4">
                       <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center text-white font-black text-xl border-2 border-white/40">
                         {p.avatar}

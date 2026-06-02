@@ -53,7 +53,7 @@ function buildCalendarLinks(session) {
       `SUMMARY:${title}`,
       `DTSTART:${googleStart}`,
       `DTEND:${googleEnd}`,
-      `DESCRIPTION:${details}\\nJoin: https://meet.google.com/uox-xpzf-upm`,
+      `DESCRIPTION:${details}\\nJoin: https://meet.jit.si/SomaConnect-${session.id || 'session'}`,
       `LOCATION:${location}`,
       `UID:${session.id || Date.now()}@somaconnect.co.ke`,
       'END:VEVENT', 'END:VCALENDAR',

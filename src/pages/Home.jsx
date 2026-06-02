@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   IconUser, IconUsers, IconUserPlus, IconSearch, IconCalendar, IconRocket,
@@ -5,18 +6,15 @@ import {
   IconShieldCheck, IconLock, IconAcademicCap,
 } from '../components/Icons';
 import { useAuth } from '../context/AuthContext';
+import { getLearnerCount, getTutorCount, formatLearnerStat, formatTutorStat } from '../utils/counter';
 
-const stats = [
-  { value: '500+', label: 'Learners Enrolled' },
-  { value: '50+', label: 'Verified Tutors & Mentors' },
-  { value: '5', label: 'Service Categories' },
-  { value: '4.8★', label: 'Average Rating' },
-];
+const FALLBACK_LEARNER = 'Growing fast — be among the first 🌱';
+const FALLBACK_TUTOR   = 'Growing fast — be among the first 🌱';
 
 const steps = [
   { step: '01', title: 'Create your profile', desc: 'Sign up as a Parent, Student, or Tutor/Mentor in under 2 minutes.', Icon: IconUserPlus },
   { step: '02', title: 'Find your match', desc: 'Browse verified tutors and mentors filtered by service, level, and availability.', Icon: IconSearch },
-  { step: '03', title: 'Book a session', desc: 'Pick a time slot, pay securely via M-Pesa, and get a Google Meet link instantly.', Icon: IconCalendar },
+  { step: '03', title: 'Book a session', desc: 'Pick a time slot, pay securely via M-Pesa, and get a Jitsi video room link instantly.', Icon: IconCalendar },
   { step: '04', title: 'Learn & grow', desc: 'Attend your session, track progress, and rate your experience.', Icon: IconRocket },
 ];
 
@@ -72,6 +70,41 @@ const trustBadges = [
 export default function Home() {
   const { user } = useAuth();
   const dashboardLink = user?.role === 'tutor' ? '/tutor-dashboard' : '/dashboard';
+
+  // Live counters from localStorage — re-read on focus (so it updates after questionnaire)
+  const [learnerCount, setLearnerCount] = useState(() => getLearnerCount());
+  const [tutorCount, setTutorCount] = useState(() => getTutorCount());
+
+  useEffect(() => {
+    const refresh = () => {
+      setLearnerCount(getLearnerCount());
+      setTutorCount(getTutorCount());
+    };
+    window.addEventListener('focus', refresh);
+    window.addEventListener('storage', refresh);
+    return () => {
+      window.removeEventListener('focus', refresh);
+      window.removeEventListener('storage', refresh);
+    };
+  }, []);
+
+  const learnerStat = formatLearnerStat(learnerCount);
+  const tutorStat   = formatTutorStat(tutorCount);
+
+  const stats = [
+    {
+      value: learnerStat,
+      fallback: FALLBACK_LEARNER,
+      label: 'Learners Enrolled',
+    },
+    {
+      value: tutorStat,
+      fallback: FALLBACK_TUTOR,
+      label: 'Verified Tutors & Mentors',
+    },
+    { value: '5', label: 'Service Categories' },
+    { value: '4.8★', label: 'Average Rating' },
+  ];
 
   return (
     <div className="font-inter">
@@ -164,9 +197,13 @@ export default function Home() {
       <section className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map(({ value, label }) => (
+            {stats.map(({ value, fallback, label }) => (
               <div key={label} className="text-center">
-                <div className="text-3xl font-black text-teal mb-1">{value}</div>
+                {value ? (
+                  <div className="text-3xl font-black text-teal mb-1">{value}</div>
+                ) : (
+                  <div className="text-sm font-bold text-teal mb-1">{fallback}</div>
+                )}
                 <div className="text-sm text-gray-500 font-medium">{label}</div>
               </div>
             ))}
