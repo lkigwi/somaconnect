@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { IconCheckCircle, IconClock, IconBanknotes, IconStar, IconCheck } from '../components/Icons';
 import RatingModal from '../components/RatingModal';
 import RescheduleModal from '../components/RescheduleModal';
@@ -106,6 +107,11 @@ function ChatModal({ session, messages, onSend, onClose }) {
 
 /* ── Dashboard ────────────────────────────────────────────── */
 export default function Dashboard() {
+  const { user } = useAuth();
+  const displayName = user?.name || 'Learner';
+  const initials = displayName.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+  const roleLabel = user?.role === 'tutor' ? 'Tutor' : user?.role === 'parent' ? 'Parent' : 'Student';
+
   const [activeTab, setActiveTab] = useState('upcoming');
   const [upcoming, setUpcoming] = useState(INITIAL_UPCOMING);
   const [pastSessions, setPastSessions] = useState(INITIAL_PAST);
@@ -198,11 +204,11 @@ export default function Dashboard() {
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-full bg-gold flex items-center justify-center shrink-0">
-                <span className="text-navy font-black text-xl">AM</span>
+                <span className="text-navy font-black text-xl">{initials}</span>
               </div>
               <div>
-                <h1 className="text-2xl font-black text-white">Welcome back, Amani!</h1>
-                <p className="text-gray-300 text-sm">Student · Nairobi, Kenya</p>
+                <h1 className="text-2xl font-black text-white">Welcome back, {displayName.split(' ')[0]}!</h1>
+                <p className="text-gray-300 text-sm">{roleLabel} · Nairobi, Kenya</p>
               </div>
             </div>
             <Link to="/browse" className="btn-primary text-sm">+ Book New Session</Link>

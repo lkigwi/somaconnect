@@ -37,6 +37,8 @@ export default function ParentQuestionnaire() {
   const [accountConfirm, setAccountConfirm] = useState('');
   const [accountError, setAccountError] = useState('');
   const [creatingAccount, setCreatingAccount] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const [form, setForm] = useState({
     childName: '', childAge: '', childGender: '', parentName: '', parentPhone: '', parentEmail: '',
@@ -232,22 +234,57 @@ export default function ParentQuestionnaire() {
                 required
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-teal transition-colors"
               />
-              <input
-                type="password"
-                value={accountPassword}
-                onChange={(e) => setAccountPassword(e.target.value)}
-                placeholder="Create password (min 8 characters) *"
-                required
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-teal transition-colors"
-              />
-              <input
-                type="password"
-                value={accountConfirm}
-                onChange={(e) => setAccountConfirm(e.target.value)}
-                placeholder="Confirm password *"
-                required
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-teal transition-colors"
-              />
+              {/* Password with show/hide */}
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={accountPassword}
+                  onChange={(e) => setAccountPassword(e.target.value)}
+                  placeholder="Create a password (min 8 characters) *"
+                  required
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-12 text-sm outline-none focus:border-teal transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal transition-colors text-xs font-semibold px-1"
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+              {accountPassword.length > 0 && accountPassword.length < 8 && (
+                <p className="text-amber-500 text-xs">Password must be at least 8 characters</p>
+              )}
+              {/* Confirm with show/hide */}
+              <div className="relative">
+                <input
+                  type={showConfirm ? 'text' : 'password'}
+                  value={accountConfirm}
+                  onChange={(e) => setAccountConfirm(e.target.value)}
+                  placeholder="Confirm your password *"
+                  required
+                  className={`w-full border rounded-xl px-4 py-3 pr-12 text-sm outline-none transition-colors ${
+                    accountConfirm && accountConfirm !== accountPassword
+                      ? 'border-red-300 focus:border-red-400'
+                      : accountConfirm && accountConfirm === accountPassword
+                      ? 'border-emerald-300 focus:border-emerald-400'
+                      : 'border-gray-200 focus:border-teal'
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal transition-colors text-xs font-semibold px-1"
+                >
+                  {showConfirm ? 'Hide' : 'Show'}
+                </button>
+              </div>
+              {accountConfirm && accountConfirm !== accountPassword && (
+                <p className="text-red-500 text-xs">Passwords do not match</p>
+              )}
+              {accountConfirm && accountConfirm === accountPassword && accountPassword.length >= 8 && (
+                <p className="text-emerald-500 text-xs flex items-center gap-1">✓ Passwords match</p>
+              )}
               {accountError && (
                 <p className="text-red-500 text-xs">{accountError}</p>
               )}
