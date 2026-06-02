@@ -28,10 +28,9 @@ const INITIAL_UPCOMING = [
   },
 ];
 
-// One session left unrated to demo the mandatory rating feature
 const INITIAL_PAST = [
   { id: 3, tutor: 'Grace Wanjiku', avatar: 'GW', subject: 'Mathematics', date: 'Mon, 20 May 2026', time: '4:00 PM', duration: '1 Hour', amount: 850, rating: 5, rated: true },
-  { id: 4, tutor: 'James Kamau', avatar: 'JK', subject: 'Chemistry', date: 'Fri, 16 May 2026', time: '2:00 PM', duration: '1 Hour', amount: 800, rating: null, rated: false },
+  { id: 4, tutor: 'James Kamau', avatar: 'JK', subject: 'Chemistry', date: 'Fri, 16 May 2026', time: '2:00 PM', duration: '1 Hour', amount: 800, rating: 4, rated: true },
   { id: 5, tutor: 'Grace Wanjiku', avatar: 'GW', subject: 'Physics', date: 'Mon, 13 May 2026', time: '4:00 PM', duration: '1.5 Hours', amount: 1200, rating: 5, rated: true },
 ];
 
@@ -152,12 +151,7 @@ export default function Dashboard() {
   const [chatSession, setChatSession] = useState(null);
   const [chatMessages, setChatMessages] = useState(CHAT_SEEDS);
 
-  // On mount: check for unrated past sessions → show mandatory rating (admin/demo only)
-  useEffect(() => {
-    if (!isAdmin) return;
-    const unrated = pastSessions.find((s) => !s.rated);
-    if (unrated) setMandatoryRating(unrated);
-  }, []); // eslint-disable-line
+  // Rating only triggers from SessionPage after a real session ends — not on login
 
   // Cancel success toast
   useEffect(() => {
@@ -269,7 +263,8 @@ export default function Dashboard() {
               {/* Upcoming sessions */}
               {activeTab === 'upcoming' && upcoming.map((s) => {
                 const sessionUrl = getSessionUrl({ bookingId: s.bookingId, tutor: s.tutor, subject: s.subject, avatar: s.avatar, role: 'student', sessionId: s.id });
-                const canJoin = studentCanJoin(s.date, s.time);
+                // Admin demo: first session is always joinable so the demo works at any time
+                const canJoin = (isAdmin && s.id === 1) || studentCanJoin(s.date, s.time);
                 const countdown = formatCountdown(s.date, s.time);
                 const isPending = s.status === 'reschedule_pending';
 
@@ -456,7 +451,7 @@ export default function Dashboard() {
                 <p className="font-bold">{upcoming[0].tutor}</p>
                 <p className="text-blue-100 text-sm">{upcoming[0].subject}</p>
                 <p className="text-white/70 text-xs mt-1">{upcoming[0].date} at {upcoming[0].time}</p>
-                {studentCanJoin(upcoming[0].date, upcoming[0].time) ? (
+                {(isAdmin || studentCanJoin(upcoming[0].date, upcoming[0].time)) ? (
                   <Link to={getSessionUrl({ bookingId: upcoming[0].bookingId, tutor: upcoming[0].tutor, subject: upcoming[0].subject, avatar: upcoming[0].avatar, role: 'student', sessionId: upcoming[0].id })}
                     className="mt-3 block bg-emerald-500 text-white text-xs font-bold py-2 px-4 rounded-xl text-center hover:bg-emerald-600 transition-colors">
                     🎥 Join Now

@@ -18,6 +18,7 @@ export default function SessionPage() {
   const jitsiRef  = useRef(null);
   const apiRef    = useRef(null);
   const [apiReady, setApiReady]       = useState(false);
+  const [loadError, setLoadError]     = useState(false);
   const [elapsed, setElapsed]         = useState(0);          // seconds
   const [showEndConfirm, setShowEndConfirm] = useState(false);
   const [showRating, setShowRating]   = useState(false);
@@ -34,7 +35,7 @@ export default function SessionPage() {
     script.src = 'https://meet.jit.si/external_api.js';
     script.async = true;
     script.onload = initJitsi;
-    script.onerror = () => console.error('Failed to load Jitsi API');
+    script.onerror = () => { console.error('Failed to load Jitsi API'); setLoadError(true); };
     document.head.appendChild(script);
 
     return () => {
@@ -55,8 +56,12 @@ export default function SessionPage() {
       configOverwrite: {
         startWithAudioMuted: false,
         startWithVideoMuted: false,
-        prejoinPageEnabled: false,     // skip the pre-join screen
+        prejoinPageEnabled: false,       // skip the pre-join screen
         disableDeepLinking: true,
+        requireDisplayName: false,       // no forced login
+        enableWelcomePage: false,
+        disableThirdPartyRequests: true, // no Google/auth calls
+        p2p: { enabled: true },          // peer-to-peer, no server account needed
       },
       interfaceConfigOverwrite: {
         SHOW_JITSI_WATERMARK: false,
@@ -126,13 +131,25 @@ export default function SessionPage() {
             <span className="text-white text-xs font-mono font-semibold">{fmt(elapsed)}</span>
           </div>
 
-          {/* End session button */}
-          <button
-            onClick={() => setShowEndConfirm(true)}
-            className="flex items-center gap-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors"
-          >
-            <span>■</span> End Session
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Fallback: open in new tab */}
+            <a
+              href={`https://meet.jit.si/${room}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Open video room in new tab (no login needed)"
+              className="text-white/50 hover:text-white text-xs px-3 py-2 rounded-xl border border-white/20 hover:border-white/40 transition-colors hidden sm:flex items-center gap-1"
+            >
+              ↗ New tab
+            </a>
+            {/* End session button */}
+            <button
+              onClick={() => setShowEndConfirm(true)}
+              className="flex items-center gap-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors"
+            >
+              <span>■</span> End Session
+            </button>
+          </div>
         </div>
       </div>
 
@@ -143,12 +160,39 @@ export default function SessionPage() {
         style={{ minHeight: 0 }}
       />
 
-      {/* Loading state */}
+      {/* Loading / error state */}
       {!apiReady && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-navy z-10">
-          <div className="w-16 h-16 border-4 border-teal border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-white font-semibold">Connecting to your session...</p>
-          <p className="text-white/50 text-sm mt-1">Room: {room}</p>
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-navy z-10 px-6 text-center">
+          {loadError ? (
+            <>
+              <div className="w-16 h-16 rounded-full bg-amber-500/20 flex items-center justify-center mb-4">
+                <span className="text-amber-400 text-3xl">⚠️</span>
+              </div>
+              <p className="text-white font-bold text-lg mb-1">Couldn't load video</p>
+              <p className="text-white/50 text-sm mb-6 max-w-sm">
+                This can happen on restricted networks. Open the room directly in a new tab — no account needed.
+              </p>
+              <a
+                href={`https://meet.jit.si/${room}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-teal text-white font-bold px-6 py-3 rounded-xl hover:bg-teal/90 transition-colors mb-3"
+              >
+                🎥 Open Video Room in New Tab
+              </a>
+              <p className="text-white/30 text-xs">Room: {room} · No login required</p>
+              <button onClick={() => navigate(-1)} className="mt-4 text-white/40 text-sm hover:text-white/70">
+                ← Go back
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="w-16 h-16 border-4 border-teal border-t-transparent rounded-full animate-spin mb-4" />
+              <p className="text-white font-semibold">Connecting to your session...</p>
+              <p className="text-white/50 text-sm mt-1">Room: {room}</p>
+              <p className="text-white/30 text-xs mt-3">No Google account required</p>
+            </>
+          )}
         </div>
       )}
 
