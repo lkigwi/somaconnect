@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { IconCheckCircle, IconClock, IconBanknotes, IconStar, IconCheck } from '../components/Icons';
 import RatingModal from '../components/RatingModal';
 import RescheduleModal from '../components/RescheduleModal';
-import { getJitsiUrl, tutorCanJoin, studentCanJoin, formatCountdown } from '../utils/jitsi';
+import { getSessionUrl, studentCanJoin, formatCountdown } from '../utils/jitsi';
 
 function ChatBubbleIcon({ className = 'w-4 h-4' }) {
   return (
@@ -268,7 +268,7 @@ export default function Dashboard() {
             <div className="space-y-4">
               {/* Upcoming sessions */}
               {activeTab === 'upcoming' && upcoming.map((s) => {
-                const jitsiUrl = getJitsiUrl(s.bookingId);
+                const sessionUrl = getSessionUrl({ bookingId: s.bookingId, tutor: s.tutor, subject: s.subject, avatar: s.avatar, role: 'student', sessionId: s.id });
                 const canJoin = studentCanJoin(s.date, s.time);
                 const countdown = formatCountdown(s.date, s.time);
                 const isPending = s.status === 'reschedule_pending';
@@ -313,10 +313,10 @@ export default function Dashboard() {
 
                       <div className="flex gap-2 flex-wrap">
                         {canJoin ? (
-                          <a href={jitsiUrl} target="_blank" rel="noopener noreferrer"
+                          <Link to={sessionUrl}
                             className="btn-teal text-xs py-2 px-4 flex items-center gap-1.5">
                             🎥 Join Session
-                          </a>
+                          </Link>
                         ) : (
                           <button disabled title="Available at session start time"
                             className="text-xs py-2 px-4 bg-gray-100 text-gray-400 rounded-xl font-semibold cursor-not-allowed flex items-center gap-1.5">
@@ -457,10 +457,10 @@ export default function Dashboard() {
                 <p className="text-blue-100 text-sm">{upcoming[0].subject}</p>
                 <p className="text-white/70 text-xs mt-1">{upcoming[0].date} at {upcoming[0].time}</p>
                 {studentCanJoin(upcoming[0].date, upcoming[0].time) ? (
-                  <a href={getJitsiUrl(upcoming[0].bookingId)} target="_blank" rel="noopener noreferrer"
+                  <Link to={getSessionUrl({ bookingId: upcoming[0].bookingId, tutor: upcoming[0].tutor, subject: upcoming[0].subject, avatar: upcoming[0].avatar, role: 'student', sessionId: upcoming[0].id })}
                     className="mt-3 block bg-emerald-500 text-white text-xs font-bold py-2 px-4 rounded-xl text-center hover:bg-emerald-600 transition-colors">
                     🎥 Join Now
-                  </a>
+                  </Link>
                 ) : (
                   <div className="mt-3 bg-white/10 text-white/60 text-xs font-medium py-2 px-4 rounded-xl text-center">
                     {formatCountdown(upcoming[0].date, upcoming[0].time) || 'Join When Ready'}

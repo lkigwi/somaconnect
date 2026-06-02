@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import CalendarDropdown from '../components/CalendarDropdown';
 import MonthCalendar from '../components/MonthCalendar';
-import { getJitsiUrl } from '../utils/jitsi';
+import { getSessionUrl } from '../utils/jitsi';
 
 const TIME_SLOTS = [
   '7:00 AM', '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM',
@@ -44,7 +44,7 @@ export default function Booking() {
   const [payError, setPayError] = useState('');
   const [bookingId] = useState(() => `${Date.now().toString().slice(-8)}`);
 
-  const jitsiUrl = getJitsiUrl(bookingId);
+  const sessionUrl = getSessionUrl({ bookingId, tutor: tutor.name, subject: tutor.subject, avatar: tutor.avatar, role: 'student', sessionId: bookingId });
 
   const handlePayment = () => {
     if (!phone.match(/^(\+254|07|01)\d{8,9}$/)) {
@@ -84,7 +84,7 @@ export default function Booking() {
       `Method:        M-Pesa`,
       '',
       '--- VIDEO SESSION ---',
-      `Join via Jitsi: ${jitsiUrl}`,
+      `Join via Jitsi: https://meet.jit.si/SomaConnect-${bookingId}`,
       `Room:           SomaConnect-${bookingId}`,
       '',
       '========================================',
@@ -144,14 +144,12 @@ export default function Booking() {
             <p className="text-xs text-gray-500 mb-3">
               Your private Jitsi room is ready. Join at your scheduled time.
             </p>
-            <a
-              href={jitsiUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to={sessionUrl}
               className="block bg-teal text-white text-sm font-bold py-3 px-4 rounded-xl text-center hover:bg-teal/90 transition-colors"
             >
               Join Video Session →
-            </a>
+            </Link>
           </div>
 
           <div className="flex gap-3 mb-4">

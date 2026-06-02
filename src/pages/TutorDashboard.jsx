@@ -4,7 +4,7 @@ import {
   IconCheckCircle, IconClock, IconBanknotes, IconStar,
   IconSettings, IconCheck, IconShieldCheck, IconPhone, IconId, IconAcademicCap,
 } from '../components/Icons';
-import { getJitsiUrl, tutorCanJoin, formatCountdown } from '../utils/jitsi';
+import { getSessionUrl, tutorCanJoin, formatCountdown } from '../utils/jitsi';
 
 const PLATFORM_COMMISSION = 0.15;
 
@@ -220,7 +220,7 @@ export default function TutorDashboard() {
 
               <div className="space-y-4">
                 {activeTab === 'upcoming' && upcomingSessions.map((s) => {
-                  const jitsiUrl = getJitsiUrl(s.bookingId);
+                  const sessionUrl = getSessionUrl({ bookingId: s.bookingId, tutor: `${s.student} (Student)`, subject: s.subject, avatar: s.avatar, role: 'tutor', sessionId: s.id });
                   const canJoin = tutorCanJoin(s.date, s.time);
                   const countdown = formatCountdown(s.date, s.time);
 
@@ -254,10 +254,9 @@ export default function TutorDashboard() {
                         )}
                         <div className="flex gap-2 flex-wrap">
                           {canJoin ? (
-                            <a href={jitsiUrl} target="_blank" rel="noopener noreferrer"
-                              className="btn-teal text-xs py-2 px-4">
+                            <Link to={sessionUrl} className="btn-teal text-xs py-2 px-4">
                               🎥 Join Session
-                            </a>
+                            </Link>
                           ) : (
                             <button disabled className="text-xs py-2 px-4 bg-gray-100 text-gray-400 rounded-xl font-semibold cursor-not-allowed">
                               🎥 Join Session
@@ -455,10 +454,10 @@ export default function TutorDashboard() {
                 <p className="text-white/70 text-xs mt-1">{upcomingSessions[0].date} at {upcomingSessions[0].time}</p>
                 <p className="text-white/50 text-xs mt-1">You can join 10 minutes early</p>
                 {tutorCanJoin(upcomingSessions[0].date, upcomingSessions[0].time) ? (
-                  <a href={getJitsiUrl(upcomingSessions[0].bookingId)} target="_blank" rel="noopener noreferrer"
+                  <Link to={getSessionUrl({ bookingId: upcomingSessions[0].bookingId, tutor: upcomingSessions[0].student, subject: upcomingSessions[0].subject, avatar: upcomingSessions[0].avatar, role: 'tutor', sessionId: upcomingSessions[0].id })}
                     className="mt-3 block bg-emerald-500 text-white text-xs font-bold py-2 px-4 rounded-xl text-center hover:bg-emerald-600 transition-colors">
                     🎥 Join Now
-                  </a>
+                  </Link>
                 ) : (
                   <div className="mt-3 bg-white/10 text-white/60 text-xs font-medium py-2 px-4 rounded-xl text-center">
                     {formatCountdown(upcomingSessions[0].date, upcomingSessions[0].time) || 'Join 10 min before'}

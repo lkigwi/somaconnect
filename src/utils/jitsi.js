@@ -3,6 +3,19 @@ const MONTHS = { Jan:0, Feb:1, Mar:2, Apr:3, May:4, Jun:5, Jul:6, Aug:7, Sep:8, 
 export const getJitsiUrl = (bookingId) =>
   `https://meet.jit.si/SomaConnect-${bookingId}`;
 
+// Internal session page URL — keeps user inside SomaConnect
+export const getSessionUrl = ({ bookingId, tutor = '', subject = '', avatar = '', role = 'student', sessionId = '' }) => {
+  const params = new URLSearchParams({
+    room:    `SomaConnect-${bookingId}`,
+    tutor,
+    subject,
+    avatar,
+    role,
+    id:      String(sessionId),
+  });
+  return `/session?${params.toString()}`;
+};
+
 // Parse "Thu, 10 Jun 2026" + "4:00 PM" → Date
 export const parseSessionDateTime = (dateStr, timeStr) => {
   try {
