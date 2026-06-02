@@ -19,6 +19,8 @@ export default function SignIn() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
+  const [showDemoName, setShowDemoName] = useState(false);
+  const [demoName, setDemoName] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -43,9 +45,16 @@ export default function SignIn() {
   };
 
   const handleDemoLogin = () => {
+    // First click: show name picker
+    if (!showDemoName) {
+      setShowDemoName(true);
+      return;
+    }
+    // Second click (after name entered): sign in
+    const name = demoName.trim() || ADMIN_NAME;
     setDemoLoading(true);
     setTimeout(() => {
-      signIn({ name: ADMIN_NAME, email: ADMIN_EMAIL, role: 'admin' });
+      signIn({ name, email: ADMIN_EMAIL, role: 'admin' });
       navigate('/dashboard');
     }, 600);
   };
@@ -61,19 +70,45 @@ export default function SignIn() {
           <p className="text-gray-500 text-sm mt-1">Sign in to your SomaConnect account</p>
         </div>
 
-        {/* Demo login button */}
-        <button
-          onClick={handleDemoLogin}
-          disabled={demoLoading}
-          className="w-full mb-5 flex items-center justify-center gap-2 py-3.5 rounded-xl border-2 border-teal bg-teal/5 text-teal font-bold text-sm hover:bg-teal hover:text-white transition-all duration-200 disabled:opacity-60"
-        >
-          {demoLoading ? (
-            <span className="w-4 h-4 border-2 border-teal border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <span>🎬</span>
+        {/* Demo login block */}
+        <div className="mb-5">
+          {showDemoName && (
+            <div className="mb-2" style={{ animation: 'scaleIn 0.15s ease-out' }}>
+              <label className="text-xs font-semibold text-gray-600 block mb-1.5">
+                Your name for this demo
+              </label>
+              <input
+                type="text"
+                value={demoName}
+                onChange={(e) => setDemoName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleDemoLogin()}
+                placeholder="e.g. Lemayian Kigwi"
+                autoFocus
+                className="w-full border-2 border-teal rounded-xl px-4 py-3 text-sm outline-none focus:border-teal/80 transition-colors"
+              />
+            </div>
           )}
-          {demoLoading ? 'Loading demo...' : 'Run Demo (Admin View)'}
-        </button>
+          <button
+            onClick={handleDemoLogin}
+            disabled={demoLoading}
+            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl border-2 border-teal bg-teal/5 text-teal font-bold text-sm hover:bg-teal hover:text-white transition-all duration-200 disabled:opacity-60"
+          >
+            {demoLoading ? (
+              <span className="w-4 h-4 border-2 border-teal border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <span>🎬</span>
+            )}
+            {demoLoading ? 'Loading demo...' : showDemoName ? 'Start Demo →' : 'Run Demo (Admin View)'}
+          </button>
+          {showDemoName && (
+            <button
+              onClick={() => { setShowDemoName(false); setDemoName(''); }}
+              className="w-full text-xs text-gray-400 hover:text-gray-600 mt-1.5 transition-colors"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
 
         <div className="flex items-center gap-3 mb-5">
           <div className="flex-1 h-px bg-gray-100" />
