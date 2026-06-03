@@ -160,12 +160,16 @@ export default function SessionPage() {
   const [camOn, setCamOn]                   = useState(true);
   const [connected, setConnected]           = useState(false);
   const [camError, setCamError]             = useState(false);
+  const [permissionAsked, setPermissionAsked] = useState(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
   const [showRating, setShowRating]         = useState(false);
   const [activeSpeaker, setActiveSpeaker]   = useState('other'); // simulate other person speaking
   const [chatOpen, setChatOpen]             = useState(false);
+  const [participantsOpen, setParticipantsOpen] = useState(false);
+  const [moreOpen, setMoreOpen]             = useState(false);
+  const [screenSharing, setScreenSharing]   = useState(false);
   const [chatMessages, setChatMessages]     = useState([
-    { id: 1, from: tutor, text: 'Hello! Ready to start?', time: 'now' },
+    { id: 1, from: tutor.split(' ')[0], text: 'Hello! Ready to start?', time: 'now' },
   ]);
   const [chatInput, setChatInput]           = useState('');
 
@@ -206,6 +210,27 @@ export default function SessionPage() {
   const toggleCam = () => {
     streamRef.current?.getVideoTracks().forEach((t) => { t.enabled = !camOn; });
     setCamOn((v) => !v);
+  };
+
+  const toggleScreenShare = async () => {
+    if (screenSharing) {
+      // Stop screen share — restore camera
+      streamRef.current?.getVideoTracks().forEach((t) => t.stop());
+      try {
+        const cam = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        if (localVideoRef.current) localVideoRef.current.srcObject = cam;
+      } catch { /* ignore */ }
+      setScreenSharing(false);
+      return;
+    }
+    try {
+      const screen = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      if (localVideoRef.current) localVideoRef.current.srcObject = screen;
+      screen.getVideoTracks()[0].addEventListener('ended', () => setScreenSharing(false));
+      setScreenSharing(true);
+    } catch {
+      alert('Screen sharing not supported or permission denied on this device.');
+    }
   };
 
   const handleEndSession = () => {
@@ -300,6 +325,42 @@ export default function SessionPage() {
           />
         </div>
 
+        {/* Participants panel */}
+        {participantsOpen && (
+          <div className="w-64 bg-gray-900 border-l border-white/5 flex flex-col shrink-0" style={{ animation: 'scaleIn 0.2s ease-out' }}>
+            <div className="px-4 py-3 border-b border-white/5 flex items-center justify-between">
+              <span className="text-white font-semibold text-sm">Participants (2)</span>
+              <button onClick={() => setParticipantsOpen(false)} className="text-white/40 hover:text-white text-lg">✕</button>
+            </div>
+            <div className="flex-1 p-3 space-y-2">
+              {[
+                { name: tutor.split(' ')[0], initials: avatar, role: 'Tutor', mic: true, cam: false },
+                { name: myName + ' (You)', initials: myInitials, role: 'Student', mic: micOn, cam: camOn },
+              ].map((p) => (
+                <div key={p.name} className="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5">
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal to-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                    {p.initials}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-xs font-semibold truncate">{p.name}</p>
+                    <p className="text-white/40 text-[10px]">{p.role}</p>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className={`text-xs ${p.mic ? 'text-white/50' : 'text-red-400'}`}>🎤</span>
+                    <span className={`text-xs ${p.cam ? 'text-white/50' : 'text-red-400'}`}>📷</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="p-3 border-t border-white/5">
+              <div className="flex items-center gap-2 text-xs text-emerald-400">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                All participants connected
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Chat panel */}
         {chatOpen && (
           <div className="w-72 bg-gray-900 border-l border-white/5 flex flex-col shrink-0" style={{ animation: 'scaleIn 0.2s ease-out' }}>
@@ -360,16 +421,30 @@ export default function SessionPage() {
           {camOn ? <IconCamOn /> : <IconCamOff />}
         </CtrlBtn>
 
-        <CtrlBtn onClick={() => {}} label="Share screen" className="hidden sm:flex">
+        <CtrlBtn
+          onClick={toggleScreenShare}
+          active={!screenSharing}
+          label={screenSharing ? 'Stop share' : 'Share screen'}
+          className={`hidden sm:flex ${screenSharing ? 'ring-2 ring-teal' : ''}`}
+        >
           <IconScreenShare />
         </CtrlBtn>
 
-        <CtrlBtn onClick={() => setChatOpen((v) => !v)} active={!chatOpen} label="Chat"
-          className={chatOpen ? 'ring-2 ring-teal' : ''}>
+        <CtrlBtn
+          onClick={() => { setChatOpen((v) => !v); setParticipantsOpen(false); setMoreOpen(false); }}
+          active={!chatOpen}
+          label="Chat"
+          className={chatOpen ? 'ring-2 ring-teal' : ''}
+        >
           <IconChat />
         </CtrlBtn>
 
-        <CtrlBtn onClick={() => {}} label="Participants">
+        <CtrlBtn
+          onClick={() => { setParticipantsOpen((v) => !v); setChatOpen(false); setMoreOpen(false); }}
+          active={!participantsOpen}
+          label="People"
+          className={participantsOpen ? 'ring-2 ring-teal' : ''}
+        >
           <IconPeople />
         </CtrlBtn>
 
@@ -385,9 +460,39 @@ export default function SessionPage() {
           <span className="text-white/40 text-[10px] font-medium">End</span>
         </div>
 
-        <CtrlBtn onClick={() => {}} label="More">
-          <IconMore />
-        </CtrlBtn>
+        {/* More — dropdown menu */}
+        <div className="relative flex flex-col items-center gap-1.5">
+          <button
+            onClick={() => { setMoreOpen((v) => !v); setChatOpen(false); setParticipantsOpen(false); }}
+            className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 ${
+              moreOpen ? 'bg-teal text-white ring-2 ring-teal' : 'bg-white/10 hover:bg-white/20 text-white'
+            }`}
+          >
+            <IconMore />
+          </button>
+          <span className="text-white/40 text-[10px] font-medium">More</span>
+
+          {moreOpen && (
+            <div className="absolute bottom-16 right-0 bg-gray-800 border border-white/10 rounded-2xl shadow-2xl overflow-hidden w-52 z-50" style={{ animation: 'scaleIn 0.15s ease-out' }}>
+              {[
+                { icon: '🔇', label: 'Noise cancellation', action: () => alert('Noise cancellation is on by default.') },
+                { icon: '🖼️', label: 'Virtual background', action: () => alert('Virtual backgrounds coming soon.') },
+                { icon: '📊', label: 'Connection quality', action: () => alert('Connection: Excellent ✅') },
+                { icon: '⚙️', label: 'Session settings', action: () => alert('Audio/Video: ' + (micOn ? 'Mic on' : 'Mic off') + ', ' + (camOn ? 'Camera on' : 'Camera off')) },
+                { icon: '🚩', label: 'Report an issue', action: () => { window.open('mailto:hello@somaconnect.co.ke?subject=Session Issue', '_blank'); setMoreOpen(false); } },
+              ].map((item) => (
+                <button
+                  key={item.label}
+                  onClick={() => { item.action(); setMoreOpen(false); }}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors text-left"
+                >
+                  <span>{item.icon}</span>
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ═══ END CONFIRM MODAL ════════════════════════════════ */}

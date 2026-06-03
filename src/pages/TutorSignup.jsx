@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import PolicyAcceptModal from '../components/PolicyAcceptModal';
+import { incrementTutorCount } from '../utils/counter';
 import FormField, { inputCls } from '../components/FormField';
 import { validators } from '../utils/validation';
 import {
@@ -37,6 +39,8 @@ const educationLevels = ["Bachelor's Degree", "Master's Degree", 'PhD / Doctorat
 export default function TutorSignup() {
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
+  const [showPolicyModal, setShowPolicyModal] = useState(false);
+  const [policiesAccepted, setPoliciesAccepted] = useState(false);
   const [touched, setTouched] = useState({});
   const [errors, setErrors] = useState({});
   const [showPwd, setShowPwd] = useState(false);
@@ -141,13 +145,24 @@ export default function TutorSignup() {
 
   const next = () => {
     if (validateStep()) {
-      if (step === 6) { setSubmitted(true); return; }
+      if (step === 6) { setShowPolicyModal(true); return; }
       setStep(step + 1);
     }
   };
 
   const commission = Math.round(Number(form.hourlyRate) * 0.85);
   const progress = ((step - 1) / (STEPS.length - 1)) * 100;
+
+  if (showPolicyModal && !policiesAccepted) {
+    return (
+      <div className="min-h-screen bg-bg flex items-center justify-center px-4">
+        <PolicyAcceptModal
+          onAccept={() => { setPoliciesAccepted(true); setShowPolicyModal(false); incrementTutorCount(); setSubmitted(true); }}
+          onClose={() => setShowPolicyModal(false)}
+        />
+      </div>
+    );
+  }
 
   if (submitted) {
     return (

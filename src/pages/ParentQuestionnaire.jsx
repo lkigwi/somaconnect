@@ -5,6 +5,7 @@ import { validators } from '../utils/validation';
 import { IconBook, IconBriefcase, IconHeart, IconSun, IconTrophy, IconCheck } from '../components/Icons';
 import { incrementLearnerCount } from '../utils/counter';
 import { useAuth } from '../context/AuthContext';
+import PolicyAcceptModal from '../components/PolicyAcceptModal';
 
 const STEPS = [
   { id: 1, title: 'About Your Child', Icon: IconBook },
@@ -39,6 +40,8 @@ export default function ParentQuestionnaire() {
   const [creatingAccount, setCreatingAccount] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showPolicyModal, setShowPolicyModal] = useState(true); // shown right after submission
+  const [policiesAccepted, setPoliciesAccepted] = useState(false);
 
   const [form, setForm] = useState({
     childName: '', childAge: '', childGender: '', parentName: '', parentPhone: '', parentEmail: '',
@@ -188,6 +191,13 @@ export default function ParentQuestionnaire() {
   if (submitted) {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center px-4 py-10">
+        {/* Policy modal — must accept before seeing account creation */}
+        {showPolicyModal && !policiesAccepted && (
+          <PolicyAcceptModal
+            onAccept={() => { setPoliciesAccepted(true); setShowPolicyModal(false); }}
+            onClose={null}
+          />
+        )}
         <div className="bg-white rounded-3xl shadow-xl p-8 md:p-10 max-w-lg w-full">
           <div className="text-center mb-6">
             <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">

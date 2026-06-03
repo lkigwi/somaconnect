@@ -5,6 +5,7 @@ import {
   IconSettings, IconCheck, IconShieldCheck, IconPhone, IconId, IconAcademicCap,
 } from '../components/Icons';
 import { getSessionUrl, tutorCanJoin, formatCountdown } from '../utils/jitsi';
+import { useAuth } from '../context/AuthContext';
 
 const PLATFORM_COMMISSION = 0.15;
 
@@ -58,8 +59,15 @@ const thisMonthSessions = sessionsWithEarnings.filter((s) => s.date.includes('Ma
 const thisMonthNet = thisMonthSessions.reduce((a, s) => a + s.net, 0);
 
 export default function TutorDashboard() {
+  const { user } = useAuth();
+  const studentName = user?.name || 'Amani Wambui';
+  const studentInitials = (user?.name || 'AW').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+
   const [requests, setRequests] = useState(pendingRequests);
-  const [rescheduleRequests, setRescheduleRequests] = useState(initialRescheduleRequests);
+  // Reschedule request uses the logged-in user's name (they are the student in the demo)
+  const [rescheduleRequests, setRescheduleRequests] = useState(
+    initialRescheduleRequests.map((r) => ({ ...r, student: studentName, avatar: studentInitials }))
+  );
   const [activeTab, setActiveTab] = useState('upcoming');
   const [activeEarningsTab, setActiveEarningsTab] = useState('breakdown');
   const [rescheduleToast, setRescheduleToast] = useState('');
